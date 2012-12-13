@@ -2,7 +2,7 @@
 
 ## Purpose
 
-CQ-Actions is a mechanism serving as the underlying transport layer, which ensures that data is properly and safely transported from publishers instances to author instance and is processed on the second one. 
+CQ Actions is a mechanism serving as the underlying transport layer, which ensures that data is properly and safely transported from publishers instances to author instance and is processed on the second one. 
 
 ## Prerequisites
 
@@ -77,4 +77,4 @@ We can:
 
 More documentation
 ------------------
-TBD
+* [Cognifide.com](http://cognifide.com)
