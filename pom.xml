@@ -21,6 +21,14 @@
 		<name>Cognifide</name>
 		<url>http://www.cognifide.com</url>
 	</organization>
+	
+	<developers>
+		<developer>
+			<name>Mateusz Chrominski</name>
+			<email>mateusz.chrominski@cognifide.com</email>
+			<organization>Cognifide</organization>
+		</developer>
+	</developers>
 
 	<scm>
 		<connection>scm:svn:https://svn.cognifide.com/cqp/tools/permissions-utils/trunk/</connection>
