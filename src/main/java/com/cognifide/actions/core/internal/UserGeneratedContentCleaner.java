@@ -1,0 +1,184 @@
+package com.cognifide.actions.core.internal;
+
+import java.util.Calendar;
+
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+
+import org.apache.felix.scr.annotations.Activate;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Deactivate;
+import org.apache.felix.scr.annotations.Properties;
+import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.jackrabbit.util.ISO8601;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.commons.osgi.PropertiesUtil;
+import org.apache.sling.commons.scheduler.Scheduler;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.ComponentContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.cognifide.actions.api.ActionRegistry;
+import com.cognifide.actions.core.util.Utils;
+
+/**
+ * Remove old and unnecessary action entries.
+ * 
+ * @author tomasz.rekawek
+ * 
+ */
+//@formatter:off
+@Component(immediate = true, metatype = true)
+@Properties({
+	@Property(name = Constants.SERVICE_DESCRIPTION, value = "User Generated Content Cleaner"),
+	@Property(name = Constants.SERVICE_VENDOR, value = "Cognifide"),
+	@Property(name = UserGeneratedContentCleaner.CRON_NAME, value = UserGeneratedContentCleaner.CRON_DEFAULT),
+	@Property(name = UserGeneratedContentCleaner.TTL_NAME, intValue = UserGeneratedContentCleaner.TTL_DEFAULT, description = "TTL in hours")
+})
+//@formatter:on
+public class UserGeneratedContentCleaner {
+	private static final Logger LOG = LoggerFactory.getLogger(UserGeneratedContentCleaner.class);
+
+	private static final String OLD_ACTIONS_QUERY = "SELECT * FROM [cq:Page] AS s "
+			+ "WHERE ISDESCENDANTNODE('%s') AND s.[jcr:created] < CAST('%s' AS DATE)";
+
+	final static String CRON_NAME = "cron";
+
+	final static String CRON_DEFAULT = "0 0 3 * * ?"; // at 3 AM
+
+	final static String TTL_NAME = "ttl";
+
+	final static int TTL_DEFAULT = 48;
+
+	private int ttl;
+
+	@Reference
+	private ActionRegistry actionRegistry;
+
+	@Reference
+	private Scheduler scheduler;
+
+	@Reference
+	private ResourceResolverFactory resolverFactory;
+
+	@Activate
+	void activate(ComponentContext ctx) throws Exception {
+		String cronExpression = Utils.propertyToString(ctx, CRON_NAME, CRON_DEFAULT);
+		ttl = PropertiesUtil.toInteger(ctx.getProperties().get(TTL_NAME), TTL_DEFAULT);
+		scheduler.addJob(getClass().getName(), new Runnable() {
+			@Override
+			public void run() {
+				cleanUserGeneratedContent();
+			}
+		}, null, cronExpression, false);
+	}
+
+	@Deactivate
+	void deactivate() {
+		scheduler.removeJob(getClass().getName());
+	}
+
+	private void cleanUserGeneratedContent() {
+		Calendar until = Calendar.getInstance();
+		until.add(Calendar.HOUR, -ttl);
+
+		ResourceResolver resolver = null;
+		try {
+			resolver = resolverFactory.getAdministrativeResourceResolver(null);
+			Session session = resolver.adaptTo(Session.class);
+
+			Node actionRoot = session.getNode(actionRegistry.getActionRoot());
+			Node yearNode = null;
+			Node monthNode = null;
+			Node dayNode = null;
+
+			yearNode = deleteChildrenUntil(session, actionRoot, until.get(Calendar.YEAR));
+			if (yearNode != null) {
+				monthNode = deleteChildrenUntil(session, yearNode, until.get(Calendar.MONTH) + 1);
+			}
+			if (monthNode != null) {
+				dayNode = deleteChildrenUntil(session, monthNode, until.get(Calendar.DAY_OF_MONTH));
+			}
+			// don't remove entries from current day folder
+			if (dayNode != null && ttl >= 24) {
+				String oldActionsQuery = String.format(OLD_ACTIONS_QUERY, dayNode.getPath(),
+						ISO8601.format(until));
+				NodeIterator oldActions = UserGeneratedContentCleaner.executeSQL2Statement(oldActionsQuery,
+						resolver);
+				while (oldActions.hasNext()) {
+					oldActions.nextNode().remove();
+				}
+				if (oldActions.getSize() > 0) {
+					session.save();
+				}
+			}
+		} catch (Exception e) {
+			LOG.error("Can't clean UGC", e);
+		} finally {
+			if (resolver != null && resolver.isLive()) {
+				resolver.close();
+			}
+		}
+	}
+
+	/**
+	 * Get all children of given folder, check if child name can be parsed as Integer and remove if it name <
+	 * until.
+	 * 
+	 * @param session Session to save after removal.
+	 * @param node Parent node.
+	 * @param until Remove children < until.
+	 * @return Child node with name == until.
+	 * @throws RepositoryException
+	 */
+	private Node deleteChildrenUntil(Session session, Node node, int until) throws RepositoryException {
+		boolean modified = false;
+
+		NodeIterator iterator = node.getNodes();
+		Node untilNode = null;
+		while (iterator.hasNext()) {
+			Node childNode = iterator.nextNode();
+			Integer name = parseIntegerOrNull(childNode.getName());
+			if (name == null) {
+				continue;
+			} else if (name < until) {
+				modified = true;
+				childNode.remove();
+			} else if (name == until) {
+				untilNode = childNode;
+			}
+		}
+
+		if (modified) {
+			session.save();
+		}
+
+		return untilNode;
+	}
+
+	private static Integer parseIntegerOrNull(String integer) {
+		try {
+			return Integer.parseInt(integer);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
+	private static NodeIterator executeSQL2Statement(final String statement,
+			final ResourceResolver resourceResolver) throws RepositoryException {
+		final Session session = resourceResolver.adaptTo(Session.class);
+		final QueryManager queryManager = session.getWorkspace().getQueryManager();
+
+		final Query createQuery = queryManager.createQuery(statement, Query.JCR_SQL2);
+		final QueryResult result = createQuery.execute();
+		return result.getNodes();
+	}
+}
