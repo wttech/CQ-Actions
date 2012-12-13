@@ -68,7 +68,7 @@ public class ActionRegistryService implements ActionRegistry {
 
 	static final String ROOT_NAME = "usermanagement.users.actions.registry.root";
 
-	static final String ROOT_DEFAULT = "/content/usergenerated/usermanagement/actions/users";
+	static final String ROOT_DEFAULT = "/content/usergenerated/actions/";
 
 	@Reference(referenceInterface = Action.class, policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE)
 	private final Map<String, Action> actions = new ConcurrentHashMap<String, Action>();
