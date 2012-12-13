@@ -23,7 +23,7 @@ Add dependency to your project:
     <dependency>
         <groupId>com.cognifide.cq.actions</groupId>
         <artifactId>cq-actions</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </dependency>
 
 Or just install it using your Felix console.
