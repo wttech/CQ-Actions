@@ -8,7 +8,7 @@ CQ Actions is a mechanism serving as the underlying transport layer, which ensur
 
 ## Installation
 
-Download latest stable version: https://github.com/Cognifide/CQ-Actions/archive/1.0.0.zip
+Download latest stable version: https://github.com/Cognifide/CQ-Actions/archive/1.0.1.zip
 
 Compile and install to your local repository:
 
@@ -19,7 +19,7 @@ Add dependency to your project:
     <dependency>
         <groupId>com.cognifide.cq.actions</groupId>
         <artifactId>cq-actions</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
 
 Or just install it using your Felix console.
