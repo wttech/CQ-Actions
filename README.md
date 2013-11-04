@@ -30,7 +30,7 @@ Implement data processing using `com.cognifide.actions.api.Action` interface. Re
 
     @Service
     @Component
-    public class MyAction {
+    public class MyAction implements Action {
 
         private final static LOGGER = LoggerFactory.getLogger(MyAction.class);
 
