@@ -59,8 +59,8 @@ import com.day.cq.wcm.api.PageManager;
 	@Property(name = Constants.SERVICE_VENDOR, value = "Cognifide"),
 	@Property(name = "process.label", value = "[Cognifide] Action Handling"),
 	@Property(name = ActionHandleEventListener.WORKING_PATH_NAME, value = ActionHandleEventListener.WORKING_PATH_DEFAULT),
-	@Property(name = EventConstants.EVENT_TOPIC, value = SlingConstants.TOPIC_RESOURCE_ADDED)
-})
+	@Property(name = EventConstants.EVENT_FILTER, value = "(path=/content/usergenerated/actions/*)"),
+	@Property(name = EventConstants.EVENT_TOPIC, value = ActionHandleEventListener.TOPIC)})
 // @formatter:on
 public class ActionHandleEventListener implements EventHandler, JobProcessor {
 
@@ -70,6 +70,8 @@ public class ActionHandleEventListener implements EventHandler, JobProcessor {
 
 	final static String WORKING_PATH_DEFAULT = "/content/usergenerated";
 
+	final static String TOPIC = "com/cognifide/actions/defaultActionsTopic";
+	
 	@Reference
 	private AdminJcrCommandExecutor executor;
 
@@ -89,6 +91,7 @@ public class ActionHandleEventListener implements EventHandler, JobProcessor {
 	@Override
 	public boolean process(Event job) {
 		final String path = (String) job.getProperty(SlingConstants.PROPERTY_PATH);
+		Boolean result = true;
 		try {
 			if (path.startsWith(workingPath)) {
 				executor.execute(new JcrCommand() {
@@ -100,16 +103,11 @@ public class ActionHandleEventListener implements EventHandler, JobProcessor {
 						if (page != null && page.getContentResource() != null) {
 							actionType = page.getContentResource().getResourceType();
 						}
-
 						LOG.info("Incoming action: " + actionType);
 						Action action = actionRegistry.getAction(actionType);
 						if (action != null) {
 							LOG.info("Performing action: " + actionType);
-							try {
-								action.perform(page);
-							} catch (Exception e) {
-								LOG.error("Exception occured during action " + actionType, e);
-							}
+							action.perform(page);
 							LOG.info("Action " + actionType + " finished");
 						} else {
 							LOG.info("No action found for: " + actionType);
@@ -119,9 +117,11 @@ public class ActionHandleEventListener implements EventHandler, JobProcessor {
 
 			}
 		} catch (Exception ex) {
+			result = false;
 			LOG.error(ex.getMessage(), ex);
 		}
-		return true;
+		LOG.info("ACTION succeed = " + result.toString());
+		return result;
 	}
 
 	@Override
