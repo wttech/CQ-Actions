@@ -60,6 +60,18 @@ Once, the `session.save()` is invoked, the node would be replicated to author in
 
 You might want to change the path on which the `ActionHandleEventListener` is listening using OSGi Configuration as well as the root path for creating action nodes in `ActionRegistryService` configuration.
 
+### Setup Jobs Queue for CQ-Actions
+Setup jobs queue adds ability to to adjust jobs queue type (eg Ordered), number of job retries if action job fails etc.
+
+To do so:
+1. On Author instance goto to Adobe CQ5 Web Console Configuration | Felix Console (http://localhost:4502/system/console/configMgr)
+2. Find "Apache Sling Job Queue Configuration" and add new entry.
+3. Set "Topics" field to "com/cognifide/actions/defaultActionsTopic".
+4. Setup other fields according to your the needs and save
+
+* Please note that if jobs queue wont be setup (or will be setup incorectly) CQ-Actions will use default main jobs-queue witch is parallel (this in certain circumstances it may be unwanted).
+
+
 # Commercial Support
 
 Technical support can be made available if needed. Please [contact us](https://www.cognifide.com/get-in-touch/) for more details.
