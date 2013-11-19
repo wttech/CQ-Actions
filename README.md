@@ -71,6 +71,16 @@ To do so:
 
 * Please note that if jobs queue wont be setup (or will be setup incorectly) CQ-Actions will use default main jobs-queue witch is parallel (this in certain circumstances it may be unwanted).
 
+#### CQ-Action jobs queue tests
+
+For testing purpose  check two files from /src/test/java folder :
+
+* SimpleActionExample.java
+* CreateActionNodes.groovy 
+
+SimpleActionExample mus be running on Author instance. (you can simply move it to src/java, build and install created JAR as bundle).
+CreateActionNodes is Groovy script witch creates special nodes under /content/usergenerated/action/ path in JCR (same as ActionRegistryService.createActionNode method).
+Adjust parameters in script, run it and check the CQ logs.
 
 # Commercial Support
 
