@@ -112,30 +112,33 @@ public class UserGeneratedContentCleaner {
 		try {
 			resolver = resolverFactory.getAdministrativeResourceResolver(null);
 			Session session = resolver.adaptTo(Session.class);
+			
+			String actionRootPath = actionRegistry.getActionRoot();
+			if (session.nodeExists(actionRootPath)) {
+				Node actionRoot = session.getNode(actionRootPath);
+				Node yearNode = null;
+				Node monthNode = null;
+				Node dayNode = null;
 
-			Node actionRoot = session.getNode(actionRegistry.getActionRoot());
-			Node yearNode = null;
-			Node monthNode = null;
-			Node dayNode = null;
-
-			yearNode = deleteChildrenUntil(session, actionRoot, until.get(Calendar.YEAR));
-			if (yearNode != null) {
-				monthNode = deleteChildrenUntil(session, yearNode, until.get(Calendar.MONTH) + 1);
-			}
-			if (monthNode != null) {
-				dayNode = deleteChildrenUntil(session, monthNode, until.get(Calendar.DAY_OF_MONTH));
-			}
-			// don't remove entries from current day folder
-			if (dayNode != null && ttl >= 24) {
-				String oldActionsQuery = String.format(OLD_ACTIONS_QUERY, dayNode.getPath(),
-						ISO8601.format(until));
-				NodeIterator oldActions = UserGeneratedContentCleaner.executeSQL2Statement(oldActionsQuery,
-						resolver);
-				while (oldActions.hasNext()) {
-					oldActions.nextNode().remove();
+				yearNode = deleteChildrenUntil(session, actionRoot, until.get(Calendar.YEAR));
+				if (yearNode != null) {
+					monthNode = deleteChildrenUntil(session, yearNode, until.get(Calendar.MONTH) + 1);
 				}
-				if (oldActions.getSize() > 0) {
-					session.save();
+				if (monthNode != null) {
+					dayNode = deleteChildrenUntil(session, monthNode, until.get(Calendar.DAY_OF_MONTH));
+				}
+				// don't remove entries from current day folder
+				if (dayNode != null && ttl >= 24) {
+					String oldActionsQuery = String.format(OLD_ACTIONS_QUERY, dayNode.getPath(),
+							ISO8601.format(until));
+					NodeIterator oldActions = UserGeneratedContentCleaner.executeSQL2Statement(oldActionsQuery,
+							resolver);
+					while (oldActions.hasNext()) {
+						oldActions.nextNode().remove();
+					}
+					if (oldActions.getSize() > 0) {
+						session.save();
+					}
 				}
 			}
 		} catch (Exception e) {

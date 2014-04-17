@@ -23,6 +23,7 @@ package com.cognifide.actions.core.internal;
 
 import javax.jcr.Session;
 
+import org.apache.commons.lang.mutable.MutableBoolean;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
@@ -92,6 +93,7 @@ public class ActionHandleEventListener implements EventHandler, JobProcessor {
 	public boolean process(Event job) {
 		final String path = (String) job.getProperty(SlingConstants.PROPERTY_PATH);
 		Boolean result = true;
+		final MutableBoolean executed = new MutableBoolean(false);
 		try {
 			if (path.startsWith(workingPath)) {
 				executor.execute(new JcrCommand() {
@@ -103,14 +105,18 @@ public class ActionHandleEventListener implements EventHandler, JobProcessor {
 						if (page != null && page.getContentResource() != null) {
 							actionType = page.getContentResource().getResourceType();
 						}
-						LOG.info("Incoming action: " + actionType);
-						Action action = actionRegistry.getAction(actionType);
-						if (action != null) {
-							LOG.info("Performing action: " + actionType);
-							action.perform(page);
-							LOG.info("Action " + actionType + " finished");
-						} else {
-							LOG.info("No action found for: " + actionType);
+						
+						if (actionType != null) {
+							LOG.debug("Incoming action: " + actionType);
+							Action action = actionRegistry.getAction(actionType);
+							if (action != null) {
+								LOG.debug("Performing action: " + actionType);
+								executed.setValue(true);
+								action.perform(page);
+								LOG.debug("Action " + actionType + " finished");
+							} else {
+								LOG.info("No action found for: " + actionType);
+							}
 						}
 					}
 				});
@@ -120,7 +126,9 @@ public class ActionHandleEventListener implements EventHandler, JobProcessor {
 			result = false;
 			LOG.error(ex.getMessage(), ex);
 		}
-		LOG.info("ACTION succeed = " + result.toString());
+		if (executed.booleanValue()) {
+			LOG.info("ACTION succeed = " + result.toString());
+		}
 		return result;
 	}
 

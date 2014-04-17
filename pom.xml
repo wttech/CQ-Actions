@@ -31,9 +31,9 @@
 	</developers>
 
 	<scm>
-		<connection>scm:svn:https://svn.cognifide.com/cqp/tools/permissions-utils/trunk/</connection>
-		<developerConnection>scm:svn:https://svn.cognifide.com/cqp/tools/permissions-utils/trunk/</developerConnection>
-		<url>https://svn.cognifide.com/cqp/tools/permissions-utils/trunk/</url>
+		<connection>scm:git:https://github.com/Cognifide/CQ-Actions/</connection>
+		<developerConnection>scm:svn:https://github.com/Cognifide/CQ-Actions/</developerConnection>
+		<url>https://github.com/Cognifide/CQ-Actions</url>
 	</scm>
 
 	<!-- Repositories  -->
