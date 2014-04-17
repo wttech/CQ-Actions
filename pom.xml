@@ -32,7 +32,7 @@
 
 	<scm>
 		<connection>scm:git:https://github.com/Cognifide/CQ-Actions/</connection>
-		<developerConnection>scm:svn:https://github.com/Cognifide/CQ-Actions/</developerConnection>
+		<developerConnection>scm:git:https://github.com/Cognifide/CQ-Actions/</developerConnection>
 		<url>https://github.com/Cognifide/CQ-Actions</url>
 	</scm>
 
