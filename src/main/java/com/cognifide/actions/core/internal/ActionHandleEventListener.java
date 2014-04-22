@@ -23,7 +23,7 @@ package com.cognifide.actions.core.internal;
 
 import javax.jcr.Session;
 
-import org.apache.commons.lang.mutable.MutableBoolean;
+import org.apache.commons.lang.mutable.MutableObject;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
@@ -93,7 +93,7 @@ public class ActionHandleEventListener implements EventHandler, JobProcessor {
 	public boolean process(Event job) {
 		final String path = (String) job.getProperty(SlingConstants.PROPERTY_PATH);
 		Boolean result = true;
-		final MutableBoolean executed = new MutableBoolean(false);
+		final MutableObject actionNameObject = new MutableObject();
 		try {
 			if (path.startsWith(workingPath)) {
 				executor.execute(new JcrCommand() {
@@ -111,7 +111,7 @@ public class ActionHandleEventListener implements EventHandler, JobProcessor {
 							Action action = actionRegistry.getAction(actionType);
 							if (action != null) {
 								LOG.debug("Performing action: " + actionType);
-								executed.setValue(true);
+								actionNameObject.setValue(actionType);
 								action.perform(page);
 								LOG.debug("Action " + actionType + " finished");
 							} else {
@@ -126,8 +126,8 @@ public class ActionHandleEventListener implements EventHandler, JobProcessor {
 			result = false;
 			LOG.error(ex.getMessage(), ex);
 		}
-		if (executed.booleanValue()) {
-			LOG.info("ACTION succeed = " + result.toString());
+		if (actionNameObject.getValue() != null) {
+			LOG.info(String.format("Action %s succeeded", actionNameObject.getValue()));
 		}
 		return result;
 	}

@@ -57,7 +57,7 @@ public class ActionHandleEventListenerProxy implements EventHandler {
 
 	@Override
 	public void handleEvent(Event event) {
-		LOG.info("ActionHandler..." + event.getProperty(SlingConstants.PROPERTY_PATH).toString());
+		LOG.debug("ActionHandler..." + event.getProperty(SlingConstants.PROPERTY_PATH).toString());
 
 		Dictionary<String, Object> properties = new Hashtable<String, Object>();
 		properties.put(SlingConstants.PROPERTY_PATH,

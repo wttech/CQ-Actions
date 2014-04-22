@@ -19,7 +19,7 @@ Add dependency to your project:
     <dependency>
         <groupId>com.cognifide.cq.actions</groupId>
         <artifactId>cq-actions</artifactId>
-        <version>1.0.1</version>
+        <version>1.1.1</version>
     </dependency>
 
 Or just install it using your Felix console.
@@ -64,6 +64,7 @@ You might want to change the path on which the `ActionHandleEventListener` is li
 Setup jobs queue adds ability to to adjust jobs queue type (eg Ordered), number of job retries if action job fails etc.
 
 To do so:
+
 1. On Author instance goto to Adobe CQ5 Web Console Configuration | Felix Console (http://localhost:4502/system/console/configMgr)
 2. Find "Apache Sling Job Queue Configuration" and add new entry.
 3. Set "Topics" field to "com/cognifide/actions/defaultActionsTopic".
