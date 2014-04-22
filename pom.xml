@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cognifide.cq.actions</groupId>
 	<artifactId>cq-actions</artifactId>
-	<version>1.1.1-SNAPSHOT</version>
+	<version>1.1.1</version>
 	<packaging>bundle</packaging>
 
 	<name>Cognifide Actions</name>
@@ -34,7 +34,7 @@
 		<connection>scm:git:https://github.com/Cognifide/CQ-Actions/</connection>
 		<developerConnection>scm:git:https://github.com/Cognifide/CQ-Actions/</developerConnection>
 		<url>https://github.com/Cognifide/CQ-Actions</url>
-	  <tag>HEAD</tag>
+	  <tag>cq-actions-1.1.1</tag>
   </scm>
 
 	<!-- Repositories  -->
