@@ -35,7 +35,7 @@ import com.day.cq.wcm.api.NameConstants;
 /**
  * Just a simple DS Component
  */
-@Component(metatype = true, immediate = true, label = "[Cognifide] Action Handling Proxy", description = "[Cognifide] Action Handling Proxy which observes jcr tree changes on chosen path.")
+@Component(metatype = true, immediate = true, label = "Cognifide Action Handling Proxy", description = "Cognifide Action Handling Proxy which observes jcr tree changes on chosen path.")
 @Service
 @Properties({
 		@Property(name = Constants.SERVICE_DESCRIPTION, description = "JCR tree change action handler."),
@@ -54,7 +54,7 @@ public class ActionHandleJCREventListenerProxy implements EventListener {
 
 	private static final String JCR_CONTENT_SUFFIX = "/jcr:content";
 
-	private static final String[] TYPES = { NameConstants.NT_PAGE };
+	private static final String[] TYPES = { "cq:Page" };
 
 	private static Logger LOG = LoggerFactory.getLogger(ActionHandleJCREventListenerProxy.class);
 
