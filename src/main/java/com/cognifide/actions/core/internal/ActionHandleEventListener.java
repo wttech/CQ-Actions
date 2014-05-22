@@ -1,25 +1,16 @@
 package com.cognifide.actions.core.internal;
 
 /*
- * #%L
- * Cognifide Actions
- * %%
- * Copyright (C) 2012 Cognifide
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * #%L Cognifide Actions %% Copyright (C) 2012 Cognifide %% Licensed under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License. #L%
  */
-
 
 import javax.jcr.Session;
 
@@ -52,16 +43,16 @@ import com.cognifide.actions.core.util.Utils;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 
-//@formatter:off
-@Component (immediate = true)
+// @formatter:off
+@Component(immediate = true)
 @Service
 @Properties({
-	@Property(name = Constants.SERVICE_DESCRIPTION, value = "Action handle event listener."),
-	@Property(name = Constants.SERVICE_VENDOR, value = "Cognifide"),
-	@Property(name = "process.label", value = "[Cognifide] Action Handling"),
-	@Property(name = ActionHandleEventListener.WORKING_PATH_NAME, value = ActionHandleEventListener.WORKING_PATH_DEFAULT),
-	@Property(name = EventConstants.EVENT_FILTER, value = "(path=/content/usergenerated/actions/*)"),
-	@Property(name = EventConstants.EVENT_TOPIC, value = ActionHandleEventListener.TOPIC)})
+		@Property(name = Constants.SERVICE_DESCRIPTION, value = "Action handle event listener."),
+		@Property(name = Constants.SERVICE_VENDOR, value = "Cognifide"),
+		@Property(name = "process.label", value = "[Cognifide] Action Handling"),
+		@Property(name = ActionHandleEventListener.WORKING_PATH_NAME, value = ActionHandleEventListener.WORKING_PATH_DEFAULT),
+		@Property(name = EventConstants.EVENT_FILTER, value = "(path=/content/usergenerated/actions/*)"),
+		@Property(name = EventConstants.EVENT_TOPIC, value = ActionHandleEventListener.TOPIC) })
 // @formatter:on
 public class ActionHandleEventListener implements EventHandler, JobProcessor {
 
@@ -72,15 +63,12 @@ public class ActionHandleEventListener implements EventHandler, JobProcessor {
 	final static String WORKING_PATH_DEFAULT = "/content/usergenerated";
 
 	final static String TOPIC = "com/cognifide/actions/defaultActionsTopic";
-	
+
 	@Reference
 	private AdminJcrCommandExecutor executor;
 
 	@Reference
 	private ActionRegistry actionRegistry;
-
-	@Reference
-	private SlingSettingsService slingSettings;
 
 	private String workingPath;
 
@@ -105,7 +93,7 @@ public class ActionHandleEventListener implements EventHandler, JobProcessor {
 						if (page != null && page.getContentResource() != null) {
 							actionType = page.getContentResource().getResourceType();
 						}
-						
+
 						if (actionType != null) {
 							LOG.debug("Incoming action: " + actionType);
 							Action action = actionRegistry.getAction(actionType);
@@ -134,15 +122,8 @@ public class ActionHandleEventListener implements EventHandler, JobProcessor {
 
 	@Override
 	public void handleEvent(Event event) {
-		if (!isAuthor()) {
-			return;
-		}
 		if (EventUtil.isLocal(event)) {
 			JobUtil.processJob(event, this);
 		}
-	}
-
-	private boolean isAuthor() {
-		return slingSettings.getRunModes().contains("author");
 	}
 }
