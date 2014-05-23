@@ -19,6 +19,8 @@ import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.SlingConstants;
+import org.apache.sling.jcr.api.SlingRepository;
+import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.event.jobs.JobUtil;
@@ -30,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cognifide.actions.core.util.Utils;
-import com.day.cq.wcm.api.NameConstants;
 
 /**
  * Just a simple DS Component
@@ -62,7 +63,7 @@ public class ActionHandleJCREventListenerProxy implements EventListener {
 	private ResourceResolverFactory resolverFactory;
 
 	@Reference
-	private Repository repository;
+	private SlingRepository repository;
 
 	@Reference
 	private EventAdmin eventAdmin;
@@ -89,17 +90,19 @@ public class ActionHandleJCREventListenerProxy implements EventListener {
 				observationManager = session.getWorkspace().getObservationManager();
 				observationManager.addEventListener(this, Event.NODE_ADDED, observedPath, true, null, TYPES,
 						false);
-				LOG.info("Observing property changes to {} nodes under {}", Arrays.asList(TYPES),
-						observedPath);
+				LOG.info("Activating. Observing property changes to \"{}\" nodes under \"{}\"",
+						Arrays.asList(TYPES), observedPath);
 			}
 
-		} catch (Exception e) {
+		} catch (RepositoryException e) {
+			LOG.error("Activiation obeserver failed:" + e);
+		} catch (LoginException e) {
 			LOG.error("Activiation obeserver failed:" + e);
 		}
 	}
 
-	protected void deactivate(ComponentContext componentContext) throws RepositoryException {
-
+	protected void deactivate(ComponentContext ctx) throws RepositoryException {
+		LOG.info("Deactivating.");
 		if (observationManager != null) {
 			observationManager.removeEventListener(this);
 		}
@@ -129,19 +132,18 @@ public class ActionHandleJCREventListenerProxy implements EventListener {
 	 * @throws RepositoryException
 	 */
 	public void convertEvent(Event event) throws RepositoryException {
-
 		Dictionary<String, Object> properties = new Hashtable<String, Object>();
 		String path = event.getPath();
 		if (StringUtils.endsWith(path, JCR_CONTENT_SUFFIX)) {
 			path = path.replace(JCR_CONTENT_SUFFIX, "");
 		}
-		LOG.info("Handle JCR Tree change:" + path);
 		properties.put(SlingConstants.PROPERTY_PATH, event.getPath());
 		properties.put(JobUtil.PROPERTY_JOB_TOPIC, ActionHandleEventListener.TOPIC);
 
 		org.osgi.service.event.Event mappedEvent = new org.osgi.service.event.Event(JobUtil.TOPIC_JOB,
 				properties);
 		eventAdmin.sendEvent(mappedEvent);
+		LOG.info("Handle JCR Tree change:" + path);
 	}
 
 	private boolean isAuthor() {
