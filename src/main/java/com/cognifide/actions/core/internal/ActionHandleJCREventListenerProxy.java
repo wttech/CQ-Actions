@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.observation.Event;
@@ -19,11 +18,9 @@ import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.SlingConstants;
-import org.apache.sling.jcr.api.SlingRepository;
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.event.jobs.JobUtil;
+import org.apache.sling.jcr.api.SlingRepository;
 import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
@@ -83,26 +80,23 @@ public class ActionHandleJCREventListenerProxy implements EventListener {
 		try {
 			String observedPath = Utils.propertyToString(ctx, OBSERVED_PATH, OBSERVED_PATH_DEFAULT);
 
-			ResourceResolver resourceResolver = resolverFactory.getAdministrativeResourceResolver(null);
-			session = resourceResolver.adaptTo(Session.class);
-
-			if (repository.getDescriptor(Repository.OPTION_OBSERVATION_SUPPORTED).equals("true")) {
-				observationManager = session.getWorkspace().getObservationManager();
-				observationManager.addEventListener(this, Event.NODE_ADDED, observedPath, true, null, TYPES,
-						false);
-				LOG.info("Activating. Observing property changes to \"{}\" nodes under \"{}\"",
-						Arrays.asList(TYPES), observedPath);
-			}
+			this.session = repository.loginAdministrative(null);
+			this.session
+					.getWorkspace()
+					.getObservationManager()
+					.addEventListener(this, org.apache.jackrabbit.spi.Event.NODE_ADDED, observedPath, true,
+							null, TYPES, false);
+			LOG.info(
+					"Activiation Handler Proxy obeserver. Observing property changes to \"{}\" nodes under \"{}\"",
+					TYPES != null ? Arrays.asList(TYPES) : "", observedPath);
 
 		} catch (RepositoryException e) {
-			LOG.error("Activiation obeserver failed:" + e);
-		} catch (LoginException e) {
-			LOG.error("Activiation obeserver failed:" + e);
+			LOG.error("Activiation Handler Proxy obeserver failed:" + e);
 		}
 	}
 
 	protected void deactivate(ComponentContext ctx) throws RepositoryException {
-		LOG.info("Deactivating.");
+		LOG.info("Deactivating Handler Proxy.");
 		if (observationManager != null) {
 			observationManager.removeEventListener(this);
 		}
@@ -110,10 +104,12 @@ public class ActionHandleJCREventListenerProxy implements EventListener {
 			session.logout();
 			session = null;
 		}
+
 	}
 
 	@Override
 	public void onEvent(EventIterator event) {
+		LOG.debug("Handling events JCR");
 		while (event.hasNext()) {
 			try {
 				convertEvent(event.nextEvent());
@@ -142,8 +138,8 @@ public class ActionHandleJCREventListenerProxy implements EventListener {
 
 		org.osgi.service.event.Event mappedEvent = new org.osgi.service.event.Event(JobUtil.TOPIC_JOB,
 				properties);
+		LOG.debug("Handle JCR Tree change:" + path);
 		eventAdmin.sendEvent(mappedEvent);
-		LOG.info("Handle JCR Tree change:" + path);
 	}
 
 	private boolean isAuthor() {
