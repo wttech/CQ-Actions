@@ -133,7 +133,7 @@ public class ActionHandleJCREventListenerProxy implements EventListener {
 		if (StringUtils.endsWith(path, JCR_CONTENT_SUFFIX)) {
 			path = path.replace(JCR_CONTENT_SUFFIX, "");
 		}
-		properties.put(SlingConstants.PROPERTY_PATH, event.getPath());
+		properties.put(SlingConstants.PROPERTY_PATH, path);
 		properties.put(JobUtil.PROPERTY_JOB_TOPIC, ActionHandleEventListener.TOPIC);
 
 		org.osgi.service.event.Event mappedEvent = new org.osgi.service.event.Event(JobUtil.TOPIC_JOB,
