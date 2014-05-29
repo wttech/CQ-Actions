@@ -26,7 +26,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.event.EventUtil;
 import org.apache.sling.event.jobs.JobProcessor;
 import org.apache.sling.event.jobs.JobUtil;
-import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.event.Event;
