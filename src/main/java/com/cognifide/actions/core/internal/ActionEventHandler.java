@@ -15,7 +15,6 @@ package com.cognifide.actions.core.internal;
 import javax.jcr.Session;
 
 import org.apache.commons.lang.mutable.MutableObject;
-import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
@@ -26,9 +25,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.event.EventUtil;
 import org.apache.sling.event.jobs.JobProcessor;
 import org.apache.sling.event.jobs.JobUtil;
-import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.framework.Constants;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
@@ -39,28 +36,20 @@ import com.cognifide.actions.api.Action;
 import com.cognifide.actions.api.ActionRegistry;
 import com.cognifide.actions.core.util.AdminJcrCommandExecutor;
 import com.cognifide.actions.core.util.JcrCommand;
-import com.cognifide.actions.core.util.Utils;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 
 // @formatter:off
 @Component(immediate = true)
 @Service
-@Properties({
-		@Property(name = Constants.SERVICE_DESCRIPTION, value = "Action handle event listener."),
+@Properties({ @Property(name = Constants.SERVICE_DESCRIPTION, value = "CQ Action Event Handler."),
 		@Property(name = Constants.SERVICE_VENDOR, value = "Cognifide"),
 		@Property(name = "process.label", value = "[Cognifide] Action Handling"),
-		@Property(name = ActionHandleEventListener.WORKING_PATH_NAME, value = ActionHandleEventListener.WORKING_PATH_DEFAULT),
-		@Property(name = EventConstants.EVENT_FILTER, value = "(path=/content/usergenerated/actions/*)"),
-		@Property(name = EventConstants.EVENT_TOPIC, value = ActionHandleEventListener.TOPIC) })
+		@Property(name = EventConstants.EVENT_TOPIC, value = ActionEventHandler.TOPIC) })
 // @formatter:on
-public class ActionHandleEventListener implements EventHandler, JobProcessor {
+public class ActionEventHandler implements EventHandler, JobProcessor {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ActionHandleEventListener.class);
-
-	final static String WORKING_PATH_NAME = "working.path";
-
-	final static String WORKING_PATH_DEFAULT = "/content/usergenerated";
+	private static final Logger LOG = LoggerFactory.getLogger(ActionEventHandler.class);
 
 	final static String TOPIC = "com/cognifide/actions/defaultActionsTopic";
 
@@ -70,46 +59,36 @@ public class ActionHandleEventListener implements EventHandler, JobProcessor {
 	@Reference
 	private ActionRegistry actionRegistry;
 
-	private String workingPath;
-
-	@Activate
-	void activate(ComponentContext ctx) throws Exception {
-		workingPath = Utils.propertyToString(ctx, WORKING_PATH_NAME, WORKING_PATH_DEFAULT);
-	}
-
 	@Override
 	public boolean process(Event job) {
 		final String path = (String) job.getProperty(SlingConstants.PROPERTY_PATH);
 		Boolean result = true;
 		final MutableObject actionNameObject = new MutableObject();
 		try {
-			if (path.startsWith(workingPath)) {
-				executor.execute(new JcrCommand() {
-					@Override
-					public void run(Session session, ResourceResolver resolver) throws Exception {
-						PageManager pm = resolver.adaptTo(PageManager.class);
-						Page page = pm.getPage(path);
-						String actionType = null;
-						if (page != null && page.getContentResource() != null) {
-							actionType = page.getContentResource().getResourceType();
-						}
+			executor.execute(new JcrCommand() {
+				@Override
+				public void run(Session session, ResourceResolver resolver) throws Exception {
+					PageManager pm = resolver.adaptTo(PageManager.class);
+					Page page = pm.getPage(path);
+					String actionType = null;
+					if (page != null && page.getContentResource() != null) {
+						actionType = page.getContentResource().getResourceType();
+					}
 
-						if (actionType != null) {
-							LOG.debug("Incoming action: " + actionType);
-							Action action = actionRegistry.getAction(actionType);
-							if (action != null) {
-								LOG.debug("Performing action: " + actionType);
-								actionNameObject.setValue(actionType);
-								action.perform(page);
-								LOG.debug("Action " + actionType + " finished");
-							} else {
-								LOG.info("No action found for: " + actionType);
-							}
+					if (actionType != null) {
+						LOG.debug("Incoming action: " + actionType);
+						Action action = actionRegistry.getAction(actionType);
+						if (action != null) {
+							LOG.debug("Performing action: " + actionType);
+							actionNameObject.setValue(actionType);
+							action.perform(page);
+							LOG.debug("Action " + actionType + " finished");
+						} else {
+							LOG.info("No action found for: " + actionType);
 						}
 					}
-				});
-
-			}
+				}
+			});
 		} catch (Exception ex) {
 			result = false;
 			LOG.error(ex.getMessage(), ex);
