@@ -18,7 +18,6 @@ import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.SlingConstants;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.event.jobs.JobUtil;
 import org.apache.sling.jcr.api.SlingRepository;
 import org.apache.sling.settings.SlingSettingsService;
@@ -33,14 +32,14 @@ import com.cognifide.actions.core.util.Utils;
 /**
  * Just a simple DS Component
  */
-@Component(metatype = true, immediate = true, label = "Cognifide Action Handling Proxy", description = "Cognifide Action Handling Proxy which observes jcr tree changes on chosen path.")
+@Component(metatype = true, immediate = true, label = "Cognifide Action Event Listener", description = "Cognifide Action Event Listener")
 @Service
 @Properties({
-		@Property(name = Constants.SERVICE_DESCRIPTION, description = "JCR tree change action handler."),
+		@Property(name = Constants.SERVICE_DESCRIPTION, description = "Listen changes on chosen path on jcr changes."),
 		@Property(name = Constants.SERVICE_VENDOR, value = "Cognifide"),
-		@Property(name = "process.label", value = "[Cognifide] Action Handling proxy", label = "Process label", description = " "),
-		@Property(name = ActionHandleJCREventListenerProxy.OBSERVED_PATH, value = ActionHandleJCREventListenerProxy.OBSERVED_PATH_DEFAULT, label = ActionHandleJCREventListenerProxy.OBSERVED_PATH_LABEL, description = ActionHandleJCREventListenerProxy.OBSERVED_PATH_DESCRIPTION) })
-public class ActionHandleJCREventListenerProxy implements EventListener {
+		@Property(name = "process.label", value = "[Cognifide] Action Event Listener", label = " ", description = " "),
+		@Property(name = ActionEventListener.OBSERVED_PATH, value = ActionEventListener.OBSERVED_PATH_DEFAULT, label = ActionEventListener.OBSERVED_PATH_LABEL, description = ActionEventListener.OBSERVED_PATH_DESCRIPTION) })
+public class ActionEventListener implements EventListener {
 
 	static final String OBSERVED_PATH = "observed.path";
 
@@ -54,10 +53,7 @@ public class ActionHandleJCREventListenerProxy implements EventListener {
 
 	private static final String[] TYPES = { "cq:Page" };
 
-	private static Logger LOG = LoggerFactory.getLogger(ActionHandleJCREventListenerProxy.class);
-
-	@Reference
-	private ResourceResolverFactory resolverFactory;
+	private static Logger LOG = LoggerFactory.getLogger(ActionEventListener.class);
 
 	@Reference
 	private SlingRepository repository;
@@ -87,16 +83,16 @@ public class ActionHandleJCREventListenerProxy implements EventListener {
 					.addEventListener(this, org.apache.jackrabbit.spi.Event.NODE_ADDED, observedPath, true,
 							null, TYPES, false);
 			LOG.info(
-					"Activiation Handler Proxy obeserver. Observing property changes to \"{}\" nodes under \"{}\"",
+					"Activated Handler Proxy observer. Observing property changes to \"{}\" nodes under \"{}\"",
 					TYPES != null ? Arrays.asList(TYPES) : "", observedPath);
 
 		} catch (RepositoryException e) {
-			LOG.error("Activiation Handler Proxy obeserver failed:" + e);
+			LOG.error("Activating Handler Proxy observer failed:" + e);
 		}
 	}
 
 	protected void deactivate(ComponentContext ctx) throws RepositoryException {
-		LOG.info("Deactivating Handler Proxy.");
+
 		if (observationManager != null) {
 			observationManager.removeEventListener(this);
 		}
@@ -104,7 +100,7 @@ public class ActionHandleJCREventListenerProxy implements EventListener {
 			session.logout();
 			session = null;
 		}
-
+		LOG.info("Deactivated Handler Proxy.");
 	}
 
 	@Override
@@ -134,7 +130,7 @@ public class ActionHandleJCREventListenerProxy implements EventListener {
 			path = path.replace(JCR_CONTENT_SUFFIX, "");
 		}
 		properties.put(SlingConstants.PROPERTY_PATH, path);
-		properties.put(JobUtil.PROPERTY_JOB_TOPIC, ActionHandleEventListener.TOPIC);
+		properties.put(JobUtil.PROPERTY_JOB_TOPIC, ActionEventHandler.TOPIC);
 
 		org.osgi.service.event.Event mappedEvent = new org.osgi.service.event.Event(JobUtil.TOPIC_JOB,
 				properties);
