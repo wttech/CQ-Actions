@@ -70,6 +70,7 @@ public class ActionEventListener implements EventListener {
 
 	protected void activate(ComponentContext ctx) {
 		if (!isAuthor()) {
+			LOG.info("Action Event Listener disabled.");
 			return;
 		}
 
@@ -83,11 +84,11 @@ public class ActionEventListener implements EventListener {
 					.addEventListener(this, org.apache.jackrabbit.spi.Event.NODE_ADDED, observedPath, true,
 							null, TYPES, false);
 			LOG.info(
-					"Activated Handler Proxy observer. Observing property changes to \"{}\" nodes under \"{}\"",
+					"Action Event Listener activated. Observing property changes to \"{}\" nodes under \"{}\"",
 					TYPES != null ? Arrays.asList(TYPES) : "", observedPath);
 
 		} catch (RepositoryException e) {
-			LOG.error("Activating Handler Proxy observer failed:" + e);
+			LOG.error("Activating Action Event Listener failed:" + e);
 		}
 	}
 
@@ -95,12 +96,13 @@ public class ActionEventListener implements EventListener {
 
 		if (observationManager != null) {
 			observationManager.removeEventListener(this);
+
+			LOG.info("Action Event Listener deactivated.");
 		}
 		if (session != null) {
 			session.logout();
 			session = null;
 		}
-		LOG.info("Deactivated Handler Proxy.");
 	}
 
 	@Override
@@ -119,7 +121,7 @@ public class ActionEventListener implements EventListener {
 	/**
 	 * Converts the JCR tree change event (creating new cq:Page node) to the the OSGI event with topic
 	 * com/cognifide/actions/defaultActionsTopic and sends it the queue.
-	 *
+	 * 
 	 * @param event
 	 * @throws RepositoryException
 	 */
