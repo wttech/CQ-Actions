@@ -32,7 +32,7 @@ Implement data processing using `com.cognifide.actions.api.Action` interface. Re
     @Component
     public class MyAction implements Action {
 
-        private final static LOGGER = LoggerFactory.getLogger(MyAction.class);
+        private final static Logger LOGGER = LoggerFactory.getLogger(MyAction.class);
 
         @Override
         public void perform(Page page) throws Exception {
