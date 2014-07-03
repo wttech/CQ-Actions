@@ -48,7 +48,7 @@ Implement data processing using `com.cognifide.actions.api.Action` interface. Re
 On publish instance, whenever you would like to invoke any action on author instance just invoke following snippet:
 
     @Reference
-    ActionRegistryService actionRegistryService;
+    ActionRegistry actionRegistryService;
 
     ...
 
