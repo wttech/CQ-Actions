@@ -60,8 +60,9 @@ import com.day.cq.wcm.api.NameConstants;
 @Component(immediate = true)
 @Properties({
 	@Property(name = Constants.SERVICE_DESCRIPTION, value = "Actions Registry Service"),
-	@Property(name = Constants.SERVICE_VENDOR, value = "Cognifide"),
-	@Property(name = ActionRegistryService.ROOT_NAME, value = ActionRegistryService.ROOT_DEFAULT)
+		@Property(name = Constants.SERVICE_VENDOR, value = "Cognifide"),
+		@Property(name = ActionRegistryService.RANDOM_PATTERN_NAME, value = ActionRegistryService.RANDOM_PATTERN_DEFAULT),
+		@Property(name = ActionRegistryService.ROOT_NAME, value = ActionRegistryService.ROOT_DEFAULT)
 })
 //@formatter:on
 public class ActionRegistryService implements ActionRegistry {
@@ -70,6 +71,10 @@ public class ActionRegistryService implements ActionRegistry {
 
 	static final String ROOT_DEFAULT = "/content/usergenerated/actions/";
 
+	static final String RANDOM_PATTERN_NAME = "actions.registry.random.pattern";
+
+	static final String RANDOM_PATTERN_DEFAULT = "**/**/";
+
 	@Reference(referenceInterface = Action.class, policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE)
 	private final Map<String, Action> actions = new ConcurrentHashMap<String, Action>();
 
@@ -77,9 +82,12 @@ public class ActionRegistryService implements ActionRegistry {
 
 	private String actionRoot;
 
+	private String randomPathPattern;
+
 	@Activate
 	void activate(ComponentContext ctx) {
 		actionRoot = Utils.slashEnd(Utils.propertyToString(ctx, ROOT_NAME, ROOT_DEFAULT));
+		randomPathPattern = Utils.propertyToString(ctx, RANDOM_PATTERN_NAME, RANDOM_PATTERN_DEFAULT);
 	}
 
 	@Deactivate
@@ -123,14 +131,26 @@ public class ActionRegistryService implements ActionRegistry {
 			path = relPath;
 		} else {
 			final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/");
-			path = actionRoot + dateFormat.format(new Date()) + relPath;
+			path = new StringBuilder(actionRoot).append(dateFormat.format(new Date())).append(relPath).toString();
 		}
 
 		if (path.endsWith("/*")) {
-			String generated = StringUtils.EMPTY + new Date().getTime() + "-" + random.nextInt(100);
-			path = StringUtils.removeEnd(path, "*") + generated;
+			path = new StringBuilder(StringUtils.removeEnd(path, "*")).append(generateRandomPathPart())
+					.append(new Date().getTime()).toString();
 		}
 		return path;
+	}
+
+	private String generateRandomPathPart() {
+		final StringBuilder builder = new StringBuilder();
+		for (char c : randomPathPattern.toCharArray()) {
+			if (c == '*') {
+				builder.append(Integer.toHexString(random.nextInt(16)));
+			} else {
+				builder.append(c);
+			}
+		}
+		return builder.toString();
 	}
 
 	protected void bindActions(Action action) {
