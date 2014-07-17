@@ -73,7 +73,7 @@ public class ActionRegistryService implements ActionRegistry {
 
 	static final String RANDOM_PATTERN_NAME = "actions.registry.random.pattern";
 
-	static final String RANDOM_PATTERN_DEFAULT = "**/**/";
+	static final String RANDOM_PATTERN_DEFAULT = "**/**";
 
 	@Reference(referenceInterface = Action.class, policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE)
 	private final Map<String, Action> actions = new ConcurrentHashMap<String, Action>();
@@ -131,12 +131,12 @@ public class ActionRegistryService implements ActionRegistry {
 			path = relPath;
 		} else {
 			final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/");
-			path = new StringBuilder(actionRoot).append(dateFormat.format(new Date())).append(relPath).toString();
+			path = String.format("%s%s/%s", actionRoot, dateFormat.format(new Date()), relPath);
 		}
 
 		if (path.endsWith("/*")) {
-			path = new StringBuilder(StringUtils.removeEnd(path, "*")).append(generateRandomPathPart())
-					.append(new Date().getTime()).toString();
+			long now = new Date().getTime();
+			path = String.format("%s%s%s", StringUtils.removeEnd(path, "*"), generateRandomPathPart(), now);
 		}
 		return path;
 	}
