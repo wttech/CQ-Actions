@@ -8,7 +8,7 @@ CQ Actions is a mechanism serving as the underlying transport layer, which ensur
 
 ## Installation
 
-Download latest stable version: https://github.com/Cognifide/CQ-Actions/archive/1.0.1.zip
+Download latest stable version: https://github.com/Cognifide/CQ-Actions/archive/cq-actions-1.2.0.zip
 
 Compile and install to your local repository:
 
