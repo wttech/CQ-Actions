@@ -59,7 +59,7 @@ import com.day.cq.wcm.api.NameConstants;
 @Service
 @Component(immediate = true)
 @Properties({
-	@Property(name = Constants.SERVICE_DESCRIPTION, value = "Actions Registry Service"),
+		@Property(name = Constants.SERVICE_DESCRIPTION, value = "Actions Registry Service"),
 		@Property(name = Constants.SERVICE_VENDOR, value = "Cognifide"),
 		@Property(name = ActionRegistryService.RANDOM_PATTERN_NAME, value = ActionRegistryService.RANDOM_PATTERN_DEFAULT),
 		@Property(name = ActionRegistryService.ROOT_NAME, value = ActionRegistryService.ROOT_DEFAULT)
@@ -130,13 +130,13 @@ public class ActionRegistryService implements ActionRegistry {
 		if (StringUtils.startsWith(relPath, "/")) {
 			path = relPath;
 		} else {
-			final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/");
+			final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 			path = String.format("%s%s/%s", actionRoot, dateFormat.format(new Date()), relPath);
 		}
 
 		if (path.endsWith("/*")) {
 			long now = new Date().getTime();
-			path = String.format("%s%s%s", StringUtils.removeEnd(path, "*"), generateRandomPathPart(), now);
+			path = String.format("%s%s/%s", StringUtils.removeEnd(path, "*"), generateRandomPathPart(), now);
 		}
 		return path;
 	}
