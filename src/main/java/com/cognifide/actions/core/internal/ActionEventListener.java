@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import com.cognifide.actions.core.util.Utils;
 
+import static javax.jcr.observation.Event.NODE_ADDED;
+
 /**
  * Just a simple DS Component
  */
@@ -70,6 +72,7 @@ public class ActionEventListener implements EventListener {
 
 	protected void activate(ComponentContext ctx) {
 		if (!isAuthor()) {
+			LOG.info("Action Event Listener disabled.");
 			return;
 		}
 
@@ -77,17 +80,14 @@ public class ActionEventListener implements EventListener {
 			String observedPath = Utils.propertyToString(ctx, OBSERVED_PATH, OBSERVED_PATH_DEFAULT);
 
 			this.session = repository.loginAdministrative(null);
-			this.session
-					.getWorkspace()
-					.getObservationManager()
-					.addEventListener(this, org.apache.jackrabbit.spi.Event.NODE_ADDED, observedPath, true,
-							null, TYPES, false);
+			this.session.getWorkspace().getObservationManager()
+					.addEventListener(this, NODE_ADDED, observedPath, true, null, TYPES, false);
 			LOG.info(
-					"Activated Handler Proxy observer. Observing property changes to \"{}\" nodes under \"{}\"",
+					"Action Event Listener activated. Observing property changes to \"{}\" nodes under \"{}\"",
 					TYPES != null ? Arrays.asList(TYPES) : "", observedPath);
 
 		} catch (RepositoryException e) {
-			LOG.error("Activating Handler Proxy observer failed:" + e);
+			LOG.error("Activating Action Event Listener failed:" + e);
 		}
 	}
 
@@ -95,12 +95,13 @@ public class ActionEventListener implements EventListener {
 
 		if (observationManager != null) {
 			observationManager.removeEventListener(this);
+
+			LOG.info("Action Event Listener deactivated.");
 		}
 		if (session != null) {
 			session.logout();
 			session = null;
 		}
-		LOG.info("Deactivated Handler Proxy.");
 	}
 
 	@Override
