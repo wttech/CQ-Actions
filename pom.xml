@@ -43,6 +43,10 @@
 			<id>cognifide-maven-public-repository</id>
 			<url>http://nexus.cognifide.com/content/groups/public</url>
 		</repository>
+		<repository>
+			<id>adobe</id>
+			<url>http://repo.adobe.com/nexus/content/groups/public/</url>
+		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
