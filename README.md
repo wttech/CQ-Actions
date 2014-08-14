@@ -8,11 +8,13 @@ CQ Actions is a mechanism serving as the underlying transport layer, which ensur
 
 ## Installation
 
+### CQ 5.6:
+
 Download latest stable version: https://github.com/Cognifide/CQ-Actions/archive/cq-actions-1.2.0.zip
 
 Compile and install to your local repository:
 
-    mvn clean package install
+    mvn clean install
 
 Add dependency to your project:
 
@@ -20,6 +22,24 @@ Add dependency to your project:
         <groupId>com.cognifide.cq.actions</groupId>
         <artifactId>cq-actions</artifactId>
         <version>1.2.0</version>
+    </dependency>
+
+Or just install it using your Felix console.
+
+### AEM 6.0:
+
+Download latest stable version: https://github.com/Cognifide/CQ-Actions/archive/cq-actions-2.0.0-incubator.zip
+
+Compile and install to your local repository:
+
+    mvn clean install
+
+Add dependency to your project:
+
+    <dependency>
+        <groupId>com.cognifide.cq.actions</groupId>
+        <artifactId>cq-actions</artifactId>
+        <version>2.0.0-incubator</version>
     </dependency>
 
 Or just install it using your Felix console.
