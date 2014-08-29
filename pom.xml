@@ -45,24 +45,6 @@
 		<tag>cq-actions-2.0.0-incubator</tag>
 	</scm>
 
-	<!-- Repositories  -->
-	<repositories>
-		<repository>
-			<id>cognifide-maven-public-repository</id>
-			<url>http://nexus.cognifide.com/content/groups/public</url>
-		</repository>
-		<repository>
-			<id>adobe</id>
-			<url>http://repo.adobe.com/nexus/content/groups/public/</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>cognifide-maven-public-repository</id>
-			<url>http://nexus.cognifide.com/content/groups/public</url>
-		</pluginRepository>
-	</pluginRepositories>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -257,13 +239,5 @@
 		</dependency>
 
 	</dependencies>
-
-	<distributionManagement>
-		<repository>
-			<id>cognifide-internal-repository</id>
-			<name>Cognifide Internal Repository</name>
-			<url>http://nexus.cognifide.com/content/repositories/cognifide-internal</url>
-		</repository>
-	</distributionManagement>
 
 </project>
