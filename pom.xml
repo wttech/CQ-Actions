@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cognifide.cq.actions</groupId>
 	<artifactId>cq-actions</artifactId>
-	<version>2.0.0-incubator2</version>
+	<version>2.0.0-incubator3-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
 	<name>Cognifide Actions</name>
@@ -43,7 +43,7 @@
 		<connection>scm:git:https://github.com/Cognifide/CQ-Actions/</connection>
 		<developerConnection>scm:git:https://github.com/Cognifide/CQ-Actions/</developerConnection>
 		<url>https://github.com/Cognifide/CQ-Actions</url>
-		<tag>cq-actions-2.0.0-incubator2</tag>
+		<tag>cq-actions-2.0.0-incubator</tag>
 	</scm>
 
 	<build>
