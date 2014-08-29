@@ -22,7 +22,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
-		<timestamp>${maven.build.timestamp}</timestamp> <!-- workaround for MRESOURCES-99 -->
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<!-- workaround for MRESOURCES-99 -->
 	</properties>
 
 	<organization>
@@ -242,6 +243,18 @@
 		</dependency>
 
 	</dependencies>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>sonatype-nexus-snapshots</id>
+			<name>Sonatype Nexus Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<name>Nexus Release Repository</name>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 	<profiles>
 		<profile>
 			<id>sonatype-oss-release</id>
