@@ -21,15 +21,10 @@ package com.cognifide.actions.core.internal;
  */
 
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Map;
 
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
 
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
@@ -37,6 +32,9 @@ import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.jackrabbit.util.ISO8601;
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
@@ -85,44 +83,35 @@ public class UserGeneratedContentCleaner implements Runnable {
 	}
 
 	public void run() {
-		Calendar until = Calendar.getInstance();
+		final Calendar until = Calendar.getInstance();
 		until.add(Calendar.HOUR, -ttl);
 
 		ResourceResolver resolver = null;
 		try {
 			resolver = resolverFactory.getAdministrativeResourceResolver(null);
-			Session session = resolver.adaptTo(Session.class);
+			final String actionRootPath = actionRegistry.getActionRoot();
+			final Resource actionRoot = resolver.getResource(actionRootPath);
+			if (actionRoot != null) {
+				final Resource yearNode = deleteChildrenUntil(actionRoot, until.get(Calendar.YEAR));
+				if (yearNode == null) {
+					return;
+				}
 
-			String actionRootPath = actionRegistry.getActionRoot();
-			if (session.nodeExists(actionRootPath)) {
-				Node actionRoot = session.getNode(actionRootPath);
-				Node yearNode = null;
-				Node monthNode = null;
-				Node dayNode = null;
+				final Resource monthNode = deleteChildrenUntil(yearNode, until.get(Calendar.MONTH) + 1);
+				if (monthNode == null) {
+					return;
+				}
 
-				yearNode = deleteChildrenUntil(session, actionRoot, until.get(Calendar.YEAR));
-				if (yearNode != null) {
-					monthNode = deleteChildrenUntil(session, yearNode, until.get(Calendar.MONTH) + 1);
+				final Resource dayNode = deleteChildrenUntil(monthNode, until.get(Calendar.DAY_OF_MONTH));
+				if (dayNode == null && ttl < 24) {
+					return;
 				}
-				if (monthNode != null) {
-					dayNode = deleteChildrenUntil(session, monthNode, until.get(Calendar.DAY_OF_MONTH));
-				}
-				// don't remove entries from current day folder
-				if (dayNode != null && ttl >= 24) {
-					String oldActionsQuery = String.format(OLD_ACTIONS_QUERY, dayNode.getPath(),
-							ISO8601.format(until));
-					NodeIterator oldActions = UserGeneratedContentCleaner.executeSQL2Statement(
-							oldActionsQuery, resolver);
-					while (oldActions.hasNext()) {
-						oldActions.nextNode().remove();
-					}
-					if (oldActions.getSize() > 0) {
-						session.save();
-					}
-				}
+				removeNodesFromDayFolder(dayNode, until);
 			}
-		} catch (Exception e) {
+		} catch (PersistenceException e) {
 			LOG.error("Can't clean UGC", e);
+		} catch (LoginException e) {
+			LOG.error("Can't get resolver", e);
 		} finally {
 			if (resolver != null && resolver.isLive()) {
 				resolver.close();
@@ -130,39 +119,51 @@ public class UserGeneratedContentCleaner implements Runnable {
 		}
 	}
 
+	private void removeNodesFromDayFolder(Resource dayResource, Calendar until) throws PersistenceException {
+		final ResourceResolver resolver = dayResource.getResourceResolver();
+		String oldActionsQuery = String.format(OLD_ACTIONS_QUERY, dayResource.getPath(),
+				ISO8601.format(until));
+		Iterator<Resource> oldActions = resolver.findResources(oldActionsQuery, Query.JCR_SQL2);
+		while (oldActions.hasNext()) {
+			resolver.delete(oldActions.next());
+		}
+		resolver.commit();
+	}
+
 	/**
 	 * Get all children of given folder, check if child name can be parsed as Integer and remove if it name <
 	 * until.
 	 * 
-	 * @param session Session to save after removal.
-	 * @param node Parent node.
+	 * @param resource Parent resource.
 	 * @param until Remove children < until.
 	 * @return Child node with name == until.
-	 * @throws RepositoryException
+	 * @throws PersistenceException
 	 */
-	private Node deleteChildrenUntil(Session session, Node node, int until) throws RepositoryException {
-		boolean modified = false;
+	private Resource deleteChildrenUntil(Resource resource, int until) throws PersistenceException {
+		final ResourceResolver resolver = resource.getResourceResolver();
 
-		NodeIterator iterator = node.getNodes();
-		Node untilNode = null;
+		boolean modified = false;
+		Resource untilResource = null;
+
+		final Iterator<Resource> iterator = resource.listChildren();
 		while (iterator.hasNext()) {
-			Node childNode = iterator.nextNode();
-			Integer name = parseIntegerOrNull(childNode.getName());
+			final Resource childResource = iterator.next();
+			Integer name = parseIntegerOrNull(childResource.getName());
 			if (name == null) {
 				continue;
 			} else if (name < until) {
 				modified = true;
-				childNode.remove();
+				resolver.delete(childResource);
 			} else if (name == until) {
-				untilNode = childNode;
+				untilResource = childResource;
 			}
 		}
 
 		if (modified) {
-			session.save();
+			resolver.commit();
 		}
 
-		return untilNode;
+		return untilResource;
 	}
 
 	private static Integer parseIntegerOrNull(String integer) {
@@ -171,15 +172,5 @@ public class UserGeneratedContentCleaner implements Runnable {
 		} catch (NumberFormatException e) {
 			return null;
 		}
-	}
-
-	private static NodeIterator executeSQL2Statement(final String statement,
-			final ResourceResolver resourceResolver) throws RepositoryException {
-		final Session session = resourceResolver.adaptTo(Session.class);
-		final QueryManager queryManager = session.getWorkspace().getQueryManager();
-
-		final Query createQuery = queryManager.createQuery(statement, Query.JCR_SQL2);
-		final QueryResult result = createQuery.execute();
-		return result.getNodes();
 	}
 }
