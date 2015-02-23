@@ -20,55 +20,35 @@ package com.cognifide.actions.core.internal;
  * #L%
  */
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.observation.Event;
-import javax.jcr.observation.EventIterator;
-import javax.jcr.observation.EventListener;
-import javax.jcr.observation.ObservationManager;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.SlingConstants;
-import org.apache.sling.commons.osgi.PropertiesUtil;
+import org.apache.sling.event.EventUtil;
 import org.apache.sling.event.jobs.JobManager;
-import org.apache.sling.jcr.api.SlingRepository;
 import org.apache.sling.settings.SlingSettingsService;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.event.EventAdmin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventConstants;
+import org.osgi.service.event.EventHandler;
 
-import static javax.jcr.observation.Event.NODE_ADDED;
+import com.cognifide.actions.api.ActionRegistry;
 
-@Component(metatype = true, immediate = true, label = "Cognifide Action Event Listener", description = "Cognifide Action Event Listener")
+@Component(immediate = true)
 @Service
-public class ActionEventListener implements EventListener {
-
-	@Property(value = ActionEventListener.OBSERVED_PATH_DEFAULT, label = "Observed path", description = "The path in jcr tree to observe.")
-	private static final String OBSERVED_PATH = "observed.path";
-
-	private static final String OBSERVED_PATH_DEFAULT = "/content/usergenerated/actions";
+@Properties({
+		@Property(name = EventConstants.EVENT_TOPIC, value = SlingConstants.TOPIC_RESOURCE_ADDED),
+		@Property(name = EventConstants.EVENT_FILTER, value = "&(resourceType=cq:Page)(path=/content/usergenerated)") })
+public class ActionEventListener implements EventHandler {
 
 	private static final String JCR_CONTENT_SUFFIX = "/jcr:content";
-
-	private static final String[] TYPES = { "cq:Page" };
-
-	private static Logger LOG = LoggerFactory.getLogger(ActionEventListener.class);
-
-	@Reference
-	private SlingRepository repository;
-
-	@Reference
-	private EventAdmin eventAdmin;
 
 	@Reference
 	private SlingSettingsService slingSettings;
@@ -76,56 +56,8 @@ public class ActionEventListener implements EventListener {
 	@Reference
 	private JobManager jobManager;
 
-	private Session session;
-
-	private ObservationManager observationManager;
-
-	@Activate
-	protected void activate(Map<String, Object> config) {
-		if (!isAuthor()) {
-			LOG.info("Action Event Listener disabled.");
-			return;
-		}
-
-		try {
-			String observedPath = PropertiesUtil.toString(config.get(OBSERVED_PATH), OBSERVED_PATH_DEFAULT);
-			this.session = repository.loginAdministrative(null);
-			this.session.getWorkspace().getObservationManager()
-					.addEventListener(this, NODE_ADDED, observedPath, true, null, TYPES, false);
-			LOG.info(
-					"Action Event Listener activated. Observing property changes to \"{}\" nodes under \"{}\"",
-					TYPES != null ? Arrays.asList(TYPES) : "", observedPath);
-
-		} catch (RepositoryException e) {
-			LOG.error("Activating Action Event Listener failed:" + e);
-		}
-	}
-
-	protected void deactivate(ComponentContext ctx) throws RepositoryException {
-
-		if (observationManager != null) {
-			observationManager.removeEventListener(this);
-
-			LOG.info("Action Event Listener deactivated.");
-		}
-		if (session != null) {
-			session.logout();
-			session = null;
-		}
-	}
-
-	@Override
-	public void onEvent(EventIterator event) {
-		LOG.debug("Handling events JCR");
-		while (event.hasNext()) {
-			try {
-				convertEvent(event.nextEvent());
-			} catch (RepositoryException e) {
-				LOG.error("The problem appear during converting the event", e);
-			}
-		}
-
-	}
+	@Reference
+	private ActionRegistry registry;
 
 	/**
 	 * Converts the JCR tree change event (creating new cq:Page node) to the the OSGI event with topic
@@ -134,14 +66,19 @@ public class ActionEventListener implements EventListener {
 	 * @param event
 	 * @throws RepositoryException
 	 */
-	public void convertEvent(Event event) throws RepositoryException {
-		Map<String, Object> payload = new HashMap<String, Object>();
-		String path = event.getPath();
-		if (StringUtils.endsWith(path, JCR_CONTENT_SUFFIX)) {
-			path = path.replace(JCR_CONTENT_SUFFIX, "");
+	@Override
+	public void handleEvent(Event event) {
+		if (!(isAuthor() && EventUtil.isLocal(event))) {
+			return;
 		}
-		payload.put(SlingConstants.PROPERTY_PATH, path);
-		jobManager.addJob(ActionEventHandler.TOPIC, payload);
+		final String path = (String) event.getProperty("path");
+		if (!StringUtils.startsWith(path, registry.getActionRoot())) {
+			return;
+		}
+
+		final Map<String, Object> payload = new HashMap<String, Object>();
+		payload.put(SlingConstants.PROPERTY_PATH, StringUtils.removeEnd(path, JCR_CONTENT_SUFFIX));
+		jobManager.addJob(ActionEventHandler.TOPIC, null, payload);
 	}
 
 	private boolean isAuthor() {
