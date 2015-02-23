@@ -42,7 +42,7 @@ Implement data processing using `com.cognifide.actions.api.ActionReceiver` inter
 
         @Override
         public void handleAction(Map<String, String> properties) throws Exception {
-            LOGGER.info("performing action");
+            LOGGER.info("received value: " + properties.get("company name"));
         }
     }
 
@@ -52,7 +52,8 @@ On publish instance, whenever you would like to invoke any action on author inst
     private ActionSubmitter actionSubmitter;
     
     Map<String, String> properties = new HashMap<String, String>();
-    properties.put("some-action-key", "this is a value");
+    properties.put("company name", "Cognifide");
+    properties.put("city", "Poznan");
     actionSubmitter.sendAction("my-action", properties);
 
 Once, the `sendAction()` is invoked, the action would be reverse-replicated to the author instance and one of the `EventHandler`s (`ActionPageListener`) will intercept the node creation event and fire proper action.
