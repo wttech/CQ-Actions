@@ -43,7 +43,6 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.ReferencePolicy;
 import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.jcr.resource.JcrResourceConstants;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 
@@ -52,7 +51,6 @@ import com.cognifide.actions.api.ActionRegistry;
 import com.cognifide.actions.core.util.Utils;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.commons.jcr.JcrUtil;
-import com.day.cq.replication.AgentConfig;
 import com.day.cq.wcm.api.NameConstants;
 
 //@formatter:off
@@ -111,12 +109,12 @@ public class ActionRegistryService implements ActionRegistry {
 		String path = createPath(relPath);
 		Node page = JcrUtil.createPath(path, true, "sling:Folder", "cq:Page", session, false);
 		Node content = page.addNode(JcrConstants.JCR_CONTENT, "cq:PageContent");
-		content.setProperty(JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY, type);
-		content.setProperty(AgentConfig.CQ_DISTRIBUTE, false);
+		content.setProperty("sling:resourceType", type);
+		content.setProperty("cq:distribute", false);
 		session.save();
 		content.setProperty(NameConstants.PN_PAGE_LAST_MOD, Calendar.getInstance());
 		content.setProperty(NameConstants.PN_PAGE_LAST_MOD_BY, session.getUserID());
-		content.setProperty(AgentConfig.CQ_DISTRIBUTE, true);
+		content.setProperty("cq:distribute", true);
 		return content;
 	}
 
