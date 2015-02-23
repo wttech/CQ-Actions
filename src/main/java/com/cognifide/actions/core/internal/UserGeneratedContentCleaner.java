@@ -1,6 +1,6 @@
 package com.cognifide.actions.core.internal;
 
-/*
+/*--
  * #%L
  * Cognifide Actions
  * %%
@@ -21,6 +21,7 @@ package com.cognifide.actions.core.internal;
  */
 
 import java.util.Calendar;
+import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -32,7 +33,6 @@ import javax.jcr.query.QueryResult;
 
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
@@ -41,13 +41,10 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.commons.scheduler.Scheduler;
-import org.osgi.framework.Constants;
-import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cognifide.actions.api.ActionRegistry;
-import com.cognifide.actions.core.util.Utils;
 
 /**
  * Remove old and unnecessary action entries.
@@ -56,21 +53,16 @@ import com.cognifide.actions.core.util.Utils;
 //@formatter:off
 @Component(immediate = true, metatype = true)
 @Properties({
-	@Property(name = Constants.SERVICE_DESCRIPTION, value = "User Generated Content Cleaner"),
-	@Property(name = Constants.SERVICE_VENDOR, value = "Cognifide"),
-	@Property(name = UserGeneratedContentCleaner.CRON_NAME, value = UserGeneratedContentCleaner.CRON_DEFAULT),
+	@Property(name = "scheduler.expression", value = "0 0 3 * * ?"),
 	@Property(name = UserGeneratedContentCleaner.TTL_NAME, intValue = UserGeneratedContentCleaner.TTL_DEFAULT, description = "TTL in hours")
 })
 //@formatter:on
-public class UserGeneratedContentCleaner {
+public class UserGeneratedContentCleaner implements Runnable {
+
 	private static final Logger LOG = LoggerFactory.getLogger(UserGeneratedContentCleaner.class);
 
 	private static final String OLD_ACTIONS_QUERY = "SELECT * FROM [cq:Page] AS s "
 			+ "WHERE ISDESCENDANTNODE('%s') AND s.[jcr:created] < CAST('%s' AS DATE)";
-
-	final static String CRON_NAME = "cron";
-
-	final static String CRON_DEFAULT = "0 0 3 * * ?"; // at 3 AM
 
 	final static String TTL_NAME = "ttl";
 
@@ -88,23 +80,11 @@ public class UserGeneratedContentCleaner {
 	private ResourceResolverFactory resolverFactory;
 
 	@Activate
-	void activate(ComponentContext ctx) throws Exception {
-		String cronExpression = Utils.propertyToString(ctx, CRON_NAME, CRON_DEFAULT);
-		ttl = PropertiesUtil.toInteger(ctx.getProperties().get(TTL_NAME), TTL_DEFAULT);
-		scheduler.addJob(getClass().getName(), new Runnable() {
-			@Override
-			public void run() {
-				cleanUserGeneratedContent();
-			}
-		}, null, cronExpression, false);
+	void activate(Map<String, Object> config) throws Exception {
+		ttl = PropertiesUtil.toInteger(config.get(TTL_NAME), TTL_DEFAULT);
 	}
 
-	@Deactivate
-	void deactivate() {
-		scheduler.removeJob(getClass().getName());
-	}
-
-	private void cleanUserGeneratedContent() {
+	public void run() {
 		Calendar until = Calendar.getInstance();
 		until.add(Calendar.HOUR, -ttl);
 
@@ -112,7 +92,7 @@ public class UserGeneratedContentCleaner {
 		try {
 			resolver = resolverFactory.getAdministrativeResourceResolver(null);
 			Session session = resolver.adaptTo(Session.class);
-			
+
 			String actionRootPath = actionRegistry.getActionRoot();
 			if (session.nodeExists(actionRootPath)) {
 				Node actionRoot = session.getNode(actionRootPath);
@@ -131,8 +111,8 @@ public class UserGeneratedContentCleaner {
 				if (dayNode != null && ttl >= 24) {
 					String oldActionsQuery = String.format(OLD_ACTIONS_QUERY, dayNode.getPath(),
 							ISO8601.format(until));
-					NodeIterator oldActions = UserGeneratedContentCleaner.executeSQL2Statement(oldActionsQuery,
-							resolver);
+					NodeIterator oldActions = UserGeneratedContentCleaner.executeSQL2Statement(
+							oldActionsQuery, resolver);
 					while (oldActions.hasNext()) {
 						oldActions.nextNode().remove();
 					}

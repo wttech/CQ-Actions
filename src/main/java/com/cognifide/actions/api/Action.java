@@ -1,6 +1,6 @@
 package com.cognifide.actions.api;
 
-/*
+/*--
  * #%L
  * Cognifide Actions
  * %%

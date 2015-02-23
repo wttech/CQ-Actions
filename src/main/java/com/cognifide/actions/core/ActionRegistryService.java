@@ -1,6 +1,6 @@
 package com.cognifide.actions.core;
 
-/*
+/*--
  * #%L
  * Cognifide Actions
  * %%
@@ -19,7 +19,6 @@ package com.cognifide.actions.core;
  * limitations under the License.
  * #L%
  */
-
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -43,12 +42,11 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.ReferencePolicy;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Constants;
-import org.osgi.service.component.ComponentContext;
 
 import com.cognifide.actions.api.Action;
 import com.cognifide.actions.api.ActionRegistry;
-import com.cognifide.actions.core.util.Utils;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.commons.jcr.JcrUtil;
 import com.day.cq.wcm.api.NameConstants;
@@ -83,9 +81,12 @@ public class ActionRegistryService implements ActionRegistry {
 	private String randomPathPattern;
 
 	@Activate
-	void activate(ComponentContext ctx) {
-		actionRoot = Utils.slashEnd(Utils.propertyToString(ctx, ROOT_NAME, ROOT_DEFAULT));
-		randomPathPattern = Utils.propertyToString(ctx, RANDOM_PATTERN_NAME, RANDOM_PATTERN_DEFAULT);
+	void activate(Map<String, Object> config) {
+		actionRoot = PropertiesUtil.toString(config.get(ROOT_NAME), ROOT_DEFAULT);
+		if (actionRoot != null && actionRoot.endsWith("/")) {
+			actionRoot = actionRoot + "/";
+		}
+		randomPathPattern = PropertiesUtil.toString(config.get(RANDOM_PATTERN_NAME), RANDOM_PATTERN_DEFAULT);
 	}
 
 	@Deactivate
