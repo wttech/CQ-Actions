@@ -1,4 +1,4 @@
-package com.cognifide.actions.core.internal;
+package com.cognifide.actions.core.replication.reception;
 
 /*--
  * #%L
@@ -39,14 +39,14 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 
-import com.cognifide.actions.api.ActionRegistry;
+import com.cognifide.actions.core.Configuration;
 
 @Component(immediate = true)
 @Service
 @Properties({
 		@Property(name = EventConstants.EVENT_TOPIC, value = SlingConstants.TOPIC_RESOURCE_ADDED),
 		@Property(name = EventConstants.EVENT_FILTER, value = "&(resourceType=cq:Page)(path=/content/usergenerated)") })
-public class ActionEventListener implements EventHandler {
+public class ActionPageListener implements EventHandler {
 
 	private static final String JCR_CONTENT_SUFFIX = "/jcr:content";
 
@@ -57,7 +57,7 @@ public class ActionEventListener implements EventHandler {
 	private JobManager jobManager;
 
 	@Reference
-	private ActionRegistry registry;
+	private Configuration config;
 
 	/**
 	 * Converts the JCR tree change event (creating new cq:Page node) to the the OSGI event with topic
@@ -72,13 +72,13 @@ public class ActionEventListener implements EventHandler {
 			return;
 		}
 		final String path = (String) event.getProperty("path");
-		if (!StringUtils.startsWith(path, registry.getActionRoot())) {
+		if (!StringUtils.startsWith(path, config.getActionRoot())) {
 			return;
 		}
 
 		final Map<String, Object> payload = new HashMap<String, Object>();
 		payload.put(SlingConstants.PROPERTY_PATH, StringUtils.removeEnd(path, JCR_CONTENT_SUFFIX));
-		jobManager.addJob(ActionEventHandler.TOPIC, null, payload);
+		jobManager.addJob(ActionPageEventHandler.TOPIC, null, payload);
 	}
 
 	private boolean isAuthor() {

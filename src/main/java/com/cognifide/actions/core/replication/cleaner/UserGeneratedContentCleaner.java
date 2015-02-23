@@ -1,4 +1,4 @@
-package com.cognifide.actions.core.internal;
+package com.cognifide.actions.core.replication.cleaner;
 
 /*--
  * #%L
@@ -42,7 +42,7 @@ import org.apache.sling.commons.scheduler.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cognifide.actions.api.ActionRegistry;
+import com.cognifide.actions.core.Configuration;
 
 /**
  * Remove old and unnecessary action entries.
@@ -69,7 +69,7 @@ public class UserGeneratedContentCleaner implements Runnable {
 	private int ttl;
 
 	@Reference
-	private ActionRegistry actionRegistry;
+	private Configuration config;
 
 	@Reference
 	private Scheduler scheduler;
@@ -89,8 +89,7 @@ public class UserGeneratedContentCleaner implements Runnable {
 		ResourceResolver resolver = null;
 		try {
 			resolver = resolverFactory.getAdministrativeResourceResolver(null);
-			final String actionRootPath = actionRegistry.getActionRoot();
-			final Resource actionRoot = resolver.getResource(actionRootPath);
+			final Resource actionRoot = resolver.getResource(config.getActionRoot());
 			if (actionRoot != null) {
 				final Resource yearNode = deleteChildrenUntil(actionRoot, until.get(Calendar.YEAR));
 				if (yearNode == null) {

@@ -1,4 +1,4 @@
-package com.cognifide.actions.core.internal;
+package com.cognifide.actions.core.replication.reception;
 
 /*--
  * #%L
@@ -20,6 +20,10 @@ package com.cognifide.actions.core.internal;
  * #L%
  */
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
@@ -28,6 +32,7 @@ import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.SlingConstants;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
@@ -36,17 +41,19 @@ import org.slf4j.LoggerFactory;
 
 import com.cognifide.actions.api.Action;
 import com.cognifide.actions.api.ActionRegistry;
+import com.cognifide.actions.core.ActionWhiteboard;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 
 // @formatter:off
+@SuppressWarnings("deprecation")
 @Component(immediate = true)
 @Service
-@Properties({ @Property(name = EventConstants.EVENT_TOPIC, value = ActionEventHandler.TOPIC) })
+@Properties({ @Property(name = EventConstants.EVENT_TOPIC, value = ActionPageEventHandler.TOPIC) })
 // @formatter:on
-public class ActionEventHandler implements EventHandler {
+public class ActionPageEventHandler implements EventHandler {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ActionEventHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ActionPageEventHandler.class);
 
 	final static String TOPIC = "com/cognifide/actions/defaultActionsTopic";
 
@@ -54,7 +61,10 @@ public class ActionEventHandler implements EventHandler {
 	private ResourceResolverFactory resolverFactory;
 
 	@Reference
-	private ActionRegistry actionRegistry;
+	private ActionRegistry registry;
+
+	@Reference
+	private ActionWhiteboard whiteboard;
 
 	@Override
 	public void handleEvent(Event event) {
@@ -72,21 +82,35 @@ public class ActionEventHandler implements EventHandler {
 				return;
 			}
 
-			LOG.debug("Incoming action: " + actionType);
-			final Action action = actionRegistry.getAction(actionType);
-			if (action != null) {
-				LOG.debug("Performing action: " + actionType);
-				action.perform(page);
-				LOG.info("Action " + actionType + " finished sucessfuly");
-			} else {
-				LOG.info("No action found for: " + actionType);
-			}
+			performLegacyAction(actionType, page);
+			performAction(actionType, page.getProperties());
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
 		} finally {
 			if (resolver != null) {
 				resolver.close();
 			}
+		}
+	}
+
+	private void performAction(String actionType, ValueMap properties) {
+		final Map<String, String> map = new LinkedHashMap<String, String>();
+		for (final String key : properties.get("_actionProperties", String[].class)) {
+			map.put(key, properties.get(key, String.class));
+		}
+		final Map<String, String> immutableMap = Collections.unmodifiableMap(map);
+		whiteboard.invokeAction(actionType, immutableMap);
+	}
+
+	private void performLegacyAction(final String actionType, final Page page) throws Exception {
+		LOG.debug("Incoming action: " + actionType);
+		final Action action = registry.getAction(actionType);
+		if (action != null) {
+			LOG.debug("Performing action: " + actionType);
+			action.perform(page);
+			LOG.info("Action " + actionType + " finished sucessfuly");
+		} else {
+			LOG.debug("No legacy action found for: " + actionType);
 		}
 	}
 }

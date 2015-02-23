@@ -22,6 +22,12 @@ package com.cognifide.actions.api;
 
 import com.day.cq.wcm.api.Page;
 
+/**
+ * Handles an incoming action.
+ * 
+ * @deprecated Use {@link ActionReceiver}.
+ */
+@Deprecated
 public interface Action {
 	void perform(Page page) throws Exception;
 
