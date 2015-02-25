@@ -87,7 +87,10 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Import-Package>*</Import-Package>
+                        <Import-Package>
+                            org.apache.sling.event.jobs.consumer;version="[1.0,2.0)",
+                            *
+                        </Import-Package>
                         <Export-Package>com.cognifide.actions.api</Export-Package>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.name}</Bundle-Name>
