@@ -31,6 +31,7 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.apache.jackrabbit.util.ISO8601;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.PersistenceException;
@@ -50,6 +51,7 @@ import com.cognifide.actions.core.Configuration;
  */
 //@formatter:off
 @Component(immediate = true, metatype = true)
+@Service
 @Properties({
 	@Property(name = "scheduler.expression", value = "0 0 3 * * ?"),
 	@Property(name = UserGeneratedContentCleaner.TTL_NAME, intValue = UserGeneratedContentCleaner.TTL_DEFAULT, description = "TTL in hours")
@@ -82,6 +84,7 @@ public class UserGeneratedContentCleaner implements Runnable {
 		ttl = PropertiesUtil.toInteger(config.get(TTL_NAME), TTL_DEFAULT);
 	}
 
+	@Override
 	public void run() {
 		final Calendar until = Calendar.getInstance();
 		until.add(Calendar.HOUR, -ttl);
