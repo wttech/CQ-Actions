@@ -33,9 +33,8 @@ import org.apache.sling.api.SlingConstants;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.ValueMap;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventConstants;
-import org.osgi.service.event.EventHandler;
+import org.apache.sling.event.jobs.Job;
+import org.apache.sling.event.jobs.consumer.JobConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,15 +44,13 @@ import com.cognifide.actions.core.ActionWhiteboard;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 
-// @formatter:off
-@SuppressWarnings("deprecation")
 @Component(immediate = true)
 @Service
-@Properties({ @Property(name = EventConstants.EVENT_TOPIC, value = ActionPageEventHandler.TOPIC) })
-// @formatter:on
-public class ActionPageEventHandler implements EventHandler {
+@Properties({ @Property(name = JobConsumer.PROPERTY_TOPICS, value = InvokeActionsJob.TOPIC) })
+@SuppressWarnings("deprecation")
+public class InvokeActionsJob implements JobConsumer {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ActionPageEventHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(InvokeActionsJob.class);
 
 	final static String TOPIC = "com/cognifide/actions/defaultActionsTopic";
 
@@ -67,8 +64,8 @@ public class ActionPageEventHandler implements EventHandler {
 	private ActionWhiteboard whiteboard;
 
 	@Override
-	public void handleEvent(Event event) {
-		final String path = (String) event.getProperty(SlingConstants.PROPERTY_PATH);
+	public JobResult process(Job job) {
+		final String path = (String) job.getProperty(SlingConstants.PROPERTY_PATH);
 		ResourceResolver resolver = null;
 		try {
 			resolver = resolverFactory.getAdministrativeResourceResolver(null);
@@ -77,13 +74,11 @@ public class ActionPageEventHandler implements EventHandler {
 			final String actionType;
 			if (page != null && page.getContentResource() != null) {
 				actionType = page.getContentResource().getResourceType();
+				performLegacyAction(actionType, page);
+				performAction(actionType, page.getProperties());
 			} else {
 				LOG.debug("Empty resource type for action page: " + path);
-				return;
 			}
-
-			performLegacyAction(actionType, page);
-			performAction(actionType, page.getProperties());
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
 		} finally {
@@ -91,11 +86,16 @@ public class ActionPageEventHandler implements EventHandler {
 				resolver.close();
 			}
 		}
+		return JobResult.OK;
 	}
 
 	private void performAction(String actionType, ValueMap properties) {
 		final Map<String, String> map = new LinkedHashMap<String, String>();
-		for (final String key : properties.get("_actionProperties", String[].class)) {
+		final String[] actionProperties = properties.get("_actionProperties", String[].class);
+		if (actionProperties == null) {
+			return;
+		}
+		for (final String key : actionProperties) {
 			map.put(key, properties.get(key, String.class));
 		}
 		final Map<String, String> immutableMap = Collections.unmodifiableMap(map);
@@ -113,4 +113,5 @@ public class ActionPageEventHandler implements EventHandler {
 			LOG.debug("No legacy action found for: " + actionType);
 		}
 	}
+
 }

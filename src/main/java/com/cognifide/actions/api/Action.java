@@ -20,6 +20,8 @@ package com.cognifide.actions.api;
  * #L%
  */
 
+import aQute.bnd.annotation.ConsumerType;
+
 import com.day.cq.wcm.api.Page;
 
 /**
@@ -28,6 +30,7 @@ import com.day.cq.wcm.api.Page;
  * @deprecated Use {@link ActionReceiver}.
  */
 @Deprecated
+@ConsumerType
 public interface Action {
 	void perform(Page page) throws Exception;
 

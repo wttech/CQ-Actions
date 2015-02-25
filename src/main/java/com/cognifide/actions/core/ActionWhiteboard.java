@@ -27,7 +27,7 @@ public class ActionWhiteboard {
 
 	public void invokeAction(String type, Map<String, String> properties) {
 		for (ActionReceiver receiver : receivers) {
-			if (receiver.accepts(type)) {
+			if (type.equals(receiver.getType())) {
 				receiver.handleAction(properties);
 			}
 		}

@@ -24,12 +24,15 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.cognifide.actions.core.replication.ReplicationBasedSubmitterService;
 
 /**
  * This interface is an internal part of the CQ Actions implementation. Don't use its methods.
  */
 @Deprecated
+@ProviderType
 public interface ActionRegistry {
 
 	/**

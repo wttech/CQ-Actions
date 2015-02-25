@@ -51,9 +51,6 @@ public class ActionRegistryService implements ActionRegistry {
 	private final Set<Action> actions = new CopyOnWriteArraySet<Action>();
 
 	@Reference
-	private ReplicationBasedSubmitterService submitterService;
-
-	@Reference
 	private Configuration config;
 
 	@Activate
@@ -73,7 +70,8 @@ public class ActionRegistryService implements ActionRegistry {
 	@Override
 	@Deprecated
 	public Node createActionNode(Session session, String relPath, String type) throws RepositoryException {
-		final String path = submitterService.createPath(relPath);
+		final String path = ReplicationBasedSubmitterService.createPath(relPath, config.getActionRoot(),
+				config.getRandomPathPattern());
 		final Node page = JcrUtil.createPath(path, true, "sling:Folder", "cq:Page", session, false);
 		final Node content = page.addNode(JcrConstants.JCR_CONTENT, "cq:PageContent");
 		content.setProperty("sling:resourceType", type);

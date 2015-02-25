@@ -2,19 +2,20 @@ package com.cognifide.actions.api;
 
 import java.util.Map;
 
+import aQute.bnd.annotation.ConsumerType;
+
 /**
  * An OSGi service that handles an incoming action.
  * 
  * @author Tomasz Rękawek
  */
+@ConsumerType
 public interface ActionReceiver {
 
 	/**
-	 * Return true if the service is interested in the action with given type.
-	 * 
-	 * @param actionType
+	 * Returns action type for this action receiver
 	 */
-	boolean accepts(String actionType);
+	String getType();
 
 	/**
 	 * Handle incoming action with given type.

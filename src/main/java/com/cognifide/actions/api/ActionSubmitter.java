@@ -2,12 +2,15 @@ package com.cognifide.actions.api;
 
 import java.util.Map;
 
+import aQute.bnd.annotation.ConsumerType;
+
 /**
  * Service that allows to send an action.
  * 
  * @author Tomasz Rękawek
  *
  */
+@ConsumerType
 public interface ActionSubmitter {
 
 	/**

@@ -45,7 +45,7 @@ import com.cognifide.actions.core.Configuration;
 @Service
 @Properties({
 		@Property(name = EventConstants.EVENT_TOPIC, value = SlingConstants.TOPIC_RESOURCE_ADDED),
-		@Property(name = EventConstants.EVENT_FILTER, value = "&(resourceType=cq:Page)(path=/content/usergenerated)") })
+		@Property(name = EventConstants.EVENT_FILTER, value = "(&(resourceType=cq:Page)(path=/content/usergenerated/*))") })
 public class ActionPageListener implements EventHandler {
 
 	private static final String JCR_CONTENT_SUFFIX = "/jcr:content";
@@ -78,7 +78,7 @@ public class ActionPageListener implements EventHandler {
 
 		final Map<String, Object> payload = new HashMap<String, Object>();
 		payload.put(SlingConstants.PROPERTY_PATH, StringUtils.removeEnd(path, JCR_CONTENT_SUFFIX));
-		jobManager.addJob(ActionPageEventHandler.TOPIC, null, payload);
+		jobManager.addJob(InvokeActionsJob.TOPIC, null, payload);
 	}
 
 	private boolean isAuthor() {

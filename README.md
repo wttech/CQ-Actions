@@ -32,7 +32,7 @@ Implement data processing using `com.cognifide.actions.api.ActionReceiver` inter
 
     @Service
     @Component
-    public class MyAction implements ActionReceiver {
+    public class MyReceiver implements ActionReceiver {
         private final static Logger LOGGER = LoggerFactory.getLogger(MyAction.class);
 
         @Override

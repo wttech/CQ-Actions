@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,8 +33,6 @@ import com.day.cq.wcm.api.NameConstants;
 public class ReplicationBasedSubmitterService implements ActionSubmitter {
 
 	static final String ACTION_PROPERTIES = "_actionProperties";
-
-	private final Random random = new Random();
 
 	@Reference
 	private Configuration config;
@@ -72,9 +71,9 @@ public class ReplicationBasedSubmitterService implements ActionSubmitter {
 
 	private ModifiableValueMap createActionResource(ResourceResolver resolver, String actionType,
 			String relPath) throws PersistenceException {
-		final String path = createPath(relPath);
-		final Resource page = ResourceUtil.getOrCreateResource(resolver, path, "cq:Page",
-				"sling:OrderedFolder", false);
+		final String path = createPath(relPath, config.getActionRoot(), config.getRandomPathPattern());
+		final Resource page = ResourceUtil.getOrCreateResource(resolver, path,
+				Collections.singletonMap(JcrConstants.JCR_PRIMARYTYPE, (Object) "cq:Page"), null, false);
 
 		final Map<String, Object> contentMap = new LinkedHashMap<String, Object>();
 		contentMap.put(JcrConstants.JCR_PRIMARYTYPE, "cq:PageContent");
@@ -90,26 +89,28 @@ public class ReplicationBasedSubmitterService implements ActionSubmitter {
 		return map;
 	}
 
-	String createPath(String relPath) {
+	static String createPath(String relPath, String actionRoot, String randomPath) {
 		final String path;
 		if (StringUtils.startsWith(relPath, "/")) {
 			path = relPath;
 		} else {
 			final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-			path = String.format("%s%s/%s", config.getActionRoot(), dateFormat.format(new Date()), relPath);
+			path = String.format("%s%s/%s", actionRoot, dateFormat.format(new Date()), relPath);
 		}
 
 		if (path.endsWith("/*")) {
 			long now = new Date().getTime();
-			return String.format("%s%s/%s", StringUtils.removeEnd(path, "*"), generateRandomPathPart(), now);
+			return String.format("%s%s/%s", StringUtils.removeEnd(path, "*"),
+					generateRandomPathPart(randomPath), now);
 		} else {
 			return path;
 		}
 	}
 
-	private String generateRandomPathPart() {
+	private static String generateRandomPathPart(String randomPath) {
 		final StringBuilder builder = new StringBuilder();
-		for (char c : config.getRandomPathPattern().toCharArray()) {
+		final Random random = new Random();
+		for (char c : randomPath.toCharArray()) {
 			if (c == '*') {
 				builder.append(Integer.toHexString(random.nextInt(16)));
 			} else {
