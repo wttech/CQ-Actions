@@ -32,18 +32,19 @@ Implement data processing using `com.cognifide.actions.api.ActionReceiver` inter
 
     @Service
     @Component
-    public class MyReceiver implements ActionReceiver {
-        private final static Logger LOGGER = LoggerFactory.getLogger(MyAction.class);
-
+    public class MyActionReceiver implements ActionReceiver {
+        private final static Logger LOGGER = LoggerFactory.getLogger(MyActionReceiver.class);
+    
         @Override
-        public String accepts(String actionType) {
-            return "my-action".equals(actionType);
+        public String getType() {
+            return "my-action";
         }
-
+    
         @Override
-        public void handleAction(Map<String, String> properties) throws Exception {
-            LOGGER.info("received value: " + properties.get("company name"));
+        public void handleAction(Map<String, String> properties) {
+            LOGGER.info("received action: " + properties);
         }
+    
     }
 
 On publish instance, whenever you would like to invoke any action on author instance just invoke following snippet:
