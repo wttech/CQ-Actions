@@ -23,7 +23,7 @@ Add dependency to your project:
     <dependency>
         <groupId>com.cognifide.cq.actions</groupId>
         <artifactId>cq-actions</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>2.1.0</version>
     </dependency>
 
 ## Usage
