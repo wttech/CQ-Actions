@@ -1,111 +1,72 @@
-# About CQ-Actions
+![Cognifide logo](http://cognifide.com/~/media/wireframe/int/images/cognifide_logo.png)
+
+# CQ Actions
 
 ## Purpose
 
 CQ Actions is a mechanism serving as the underlying transport layer, which ensures that data is properly and safely transported from publishers instances to author instance and is processed on the second one. 
 
+## Features
+
+* Seamless communication from CQ publish to author using reverse replication
+* Messages contain key-value string map
+* You may register any number of author services listening to a given message topic
+
 ## Prerequisites
+
+* CQ 5.6.1 or AEM 6
 
 ## Installation
 
-### CQ 5.6:
-
-Download latest stable version: https://github.com/Cognifide/CQ-Actions/archive/cq-actions-1.2.0.zip
-
-Compile and install to your local repository:
-
-    mvn clean install
-
 Add dependency to your project:
 
     <dependency>
         <groupId>com.cognifide.cq.actions</groupId>
         <artifactId>cq-actions</artifactId>
-        <version>1.2.0</version>
+        <version>3.0.0-SNAPSHOT</version>
     </dependency>
-
-Or just install it using your Felix console.
-
-### AEM 6.0:
-
-Download latest stable version: https://github.com/Cognifide/CQ-Actions/archive/cq-actions-2.0.0-incubator.zip
-
-Compile and install to your local repository:
-
-    mvn clean install
-
-Add dependency to your project:
-
-    <dependency>
-        <groupId>com.cognifide.cq.actions</groupId>
-        <artifactId>cq-actions</artifactId>
-        <version>2.0.0-incubator</version>
-    </dependency>
-
-Or just install it using your Felix console.
 
 ## Usage
 
-Implement data processing using `com.cognifide.actions.api.Action` interface. Remember to create OSGi descriptors for the class:
+Implement data processing using `com.cognifide.actions.api.ActionReceiver` interface. Remember to create OSGi descriptors for the class:
 
     @Service
     @Component
-    public class MyAction implements Action {
-
-        private final static Logger LOGGER = LoggerFactory.getLogger(MyAction.class);
-
+    public class MyActionReceiver implements ActionReceiver {
+    
+        private static final Logger LOGGER = LoggerFactory.getLogger(MyActionReceiver.class);
+    
         @Override
-        public void perform(Page page) throws Exception {
-            LOGGER.info("performing action");
-        }
-
         public String getType() {
             return "my-action";
         }
-
+    
+        @Override
+        public void handleAction(Map<String, String> properties) {
+            LOGGER.info("received action: " + properties);
+        }
+    
     }
 
 On publish instance, whenever you would like to invoke any action on author instance just invoke following snippet:
 
     @Reference
-    ActionRegistry actionRegistryService;
+    private ActionSubmitter actionSubmitter;
+    
+    Map<String, String> properties = new HashMap<String, String>();
+    properties.put("company name", "Cognifide");
+    properties.put("city", "Poznan");
+    actionSubmitter.sendAction("my-action", properties);
 
-    ...
+Once, the `sendAction()` is invoked, the action would be reverse-replicated to the author instance and one of the `EventHandler`s (`ActionPageListener`) will intercept the node creation event and fire proper action.
 
-    Node node = actionRegistryService.createActionNode(session, relPath, "my-action");
-    node.setProperty(name, value);
-    session.save();
+### Setup jobs queue for CQ Actions
 
-Once, the `session.save()` is invoked, the node would be replicated to author instance and one of the `EventHandler`s (`ActionHandleEventListener`) will intercept the node creation event and fire proper action.
-
-You might want to change the path on which the `ActionHandleEventListener` is listening using OSGi Configuration as well as the root path for creating action nodes in `ActionRegistryService` configuration.
-
-### Setup Jobs Queue for CQ-Actions
-Setup jobs queue adds ability to to adjust jobs queue type (eg Ordered), number of job retries if action job fails etc.
-
-To do so:
-
-1. On Author instance goto to Adobe CQ5 Web Console Configuration | Felix Console (http://localhost:4502/system/console/configMgr)
-2. Find "Apache Sling Job Queue Configuration" and add new entry.
-3. Set "Topics" field to "com/cognifide/actions/defaultActionsTopic".
-4. Setup other fields according to your the needs and save
-
-* Please note that if jobs queue wont be setup (or will be setup incorectly) CQ-Actions will use default main jobs-queue witch is parallel (this in certain circumstances it may be unwanted).
-
-#### CQ-Action jobs queue tests
-
-For testing purpose  check two files from /src/test/java folder :
-
-* SimpleActionExample.java
-* CreateActionNodes.groovy 
-
-SimpleActionExample mus be running on Author instance. (you can simply move it to src/java, build and install created JAR as bundle).
-CreateActionNodes is Groovy script witch creates special nodes under /content/usergenerated/action/ path in JCR (same as ActionRegistryService.createActionNode method).
-Adjust parameters in script, run it and check the CQ logs.
+Read on [wiki](https://github.com/Cognifide/CQ-Actions/wiki/Setup-Jobs-Queue-for-CQ-Actions).
 
 # Commercial Support
 
-Technical support can be made available if needed. Please [contact us](https://www.cognifide.com/get-in-touch/) for more details.
+Technical support can be made available if needed. Please [contact us](http://www.cognifide.com/contact/) for more details.
 
 We can:
 
@@ -113,7 +74,3 @@ We can:
 * tailor the product to your needs,
 * provide a training for your engineers,
 * support your development teams.
-
-More documentation
-------------------
-* [Cognifide.com](http://cognifide.com)

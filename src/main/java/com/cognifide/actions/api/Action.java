@@ -1,6 +1,6 @@
 package com.cognifide.actions.api;
 
-/*
+/*--
  * #%L
  * Cognifide Actions
  * %%
@@ -20,13 +20,19 @@ package com.cognifide.actions.api;
  * #L%
  */
 
+import aQute.bnd.annotation.ConsumerType;
 
 import com.day.cq.wcm.api.Page;
 
+/**
+ * Handles an incoming action.
+ * 
+ * @deprecated Use {@link ActionReceiver}.
+ */
+@Deprecated
+@ConsumerType
 public interface Action {
-
 	void perform(Page page) throws Exception;
 
 	String getType();
-
 }

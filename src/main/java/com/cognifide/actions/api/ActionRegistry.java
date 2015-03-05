@@ -1,6 +1,6 @@
 package com.cognifide.actions.api;
 
-/*
+/*--
  * #%L
  * Cognifide Actions
  * %%
@@ -20,17 +20,41 @@ package com.cognifide.actions.api;
  * #L%
  */
 
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import aQute.bnd.annotation.ProviderType;
+
+import com.cognifide.actions.core.replication.ReplicationBasedSubmitterService;
+
+/**
+ * This interface is an internal part of the CQ Actions implementation. Don't use its methods.
+ */
+@Deprecated
+@ProviderType
 public interface ActionRegistry {
 
+	/**
+	 * Returns action service for a given type.
+	 */
+	@Deprecated
 	Action getAction(String type);
 
+	/**
+	 * Creates new action node.
+	 * 
+	 * @deprecated Use {@link ReplicationBasedSubmitterService#sendAction}.
+	 */
+	@Deprecated
 	Node createActionNode(Session session, String relPath, String type) throws RepositoryException;
 
+	/**
+	 * Returns the action root folder.
+	 * 
+	 * @return
+	 */
+	@Deprecated
 	String getActionRoot();
 
 }
