@@ -18,7 +18,7 @@
  * #L%
  */
 
-package com.cognifide.actions.core.replication.cleaner;
+package com.cognifide.actions.transport.replication.cleaner;
 
 import java.util.Calendar;
 import java.util.Iterator;
@@ -43,7 +43,7 @@ import org.apache.sling.commons.scheduler.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cognifide.actions.core.replication.Configuration;
+import com.cognifide.actions.transport.replication.Configuration;
 
 /**
  * Remove old and unnecessary action entries.

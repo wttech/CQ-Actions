@@ -18,7 +18,7 @@
  * #L%
  */
 
-package com.cognifide.actions.core.replication.reception;
+package com.cognifide.actions.transport.replication.reception;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +39,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 
-import com.cognifide.actions.core.replication.Configuration;
+import com.cognifide.actions.transport.replication.Configuration;
 
 @Component(immediate = true)
 @Service

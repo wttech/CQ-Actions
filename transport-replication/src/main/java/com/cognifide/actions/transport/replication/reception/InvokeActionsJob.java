@@ -18,7 +18,7 @@
  * #L%
  */
 
-package com.cognifide.actions.core.replication.reception;
+package com.cognifide.actions.transport.replication.reception;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

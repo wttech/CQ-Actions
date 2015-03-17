@@ -18,7 +18,7 @@
  * #L%
  */
 
-package com.cognifide.actions.core.replication;
+package com.cognifide.actions.transport.replication;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
