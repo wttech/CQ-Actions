@@ -8,3 +8,5 @@
 *.war
 *.ear
 /target/
+/target/
+/target/

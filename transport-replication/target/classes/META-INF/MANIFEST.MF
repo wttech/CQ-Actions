@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bnd-LastModified: 1426605524456
+Build-Jdk: 1.8.0_20
+Built-By: newton
+Bundle-Description: Replication-based implementation of the CQ Actions
+Bundle-DocURL: http://www.cognifide.com
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
+Bundle-ManifestVersion: 2
+Bundle-Name: CQ Actions Replication
+Bundle-SymbolicName: com.cognifide.cq.actions.transport.replication
+Bundle-Vendor: Cognifide
+Bundle-Version: 3.0.0.SNAPSHOT
+Created-By: Apache Maven Bundle Plugin
+Export-Package: com.cognifide.actions.core.replication.cleaner;version="
+ 3.0.0",com.cognifide.actions.core.replication;version="3.0.0";uses:="co
+ m.cognifide.actions.api",com.cognifide.actions.core.replication.recepti
+ on;version="3.0.0";uses:="org.apache.sling.event.jobs,org.apache.sling.
+ event.jobs.consumer,org.osgi.service.event"
+Import-Package: org.apache.sling.event.jobs.consumer;version="[1.0,2.0)"
+ ,com.cognifide.actions.api;version="[3.0,4)",com.cognifide.actions.api.
+ internal;version="[3.0,4)",com.day.cq.wcm.api,org.apache.commons.lang;v
+ ersion="[2.4,3)",org.apache.jackrabbit.util,org.apache.sling.api.resour
+ ce;version="[2.3,3)",org.apache.sling.commons.osgi,org.apache.sling.com
+ mons.scheduler;version="[2.2,3)",org.apache.sling.event;version="[2.4,3
+ )",org.apache.sling.event.jobs;version="[1.2,2)",org.apache.sling.setti
+ ngs;version="[1.2,2)",org.osgi.service.event;version="[1.2,2)",org.slf4
+ j;version="[1.6,2)"
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.6))"
+Tool: Bnd-2.3.0.201405100607
