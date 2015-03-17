@@ -38,8 +38,6 @@ import org.apache.sling.event.jobs.consumer.JobConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cognifide.actions.api.Action;
-import com.cognifide.actions.api.ActionRegistry;
 import com.cognifide.actions.core.ActionWhiteboard;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
@@ -47,7 +45,6 @@ import com.day.cq.wcm.api.PageManager;
 @Component(immediate = true)
 @Service
 @Properties({ @Property(name = JobConsumer.PROPERTY_TOPICS, value = InvokeActionsJob.TOPIC) })
-@SuppressWarnings("deprecation")
 public class InvokeActionsJob implements JobConsumer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(InvokeActionsJob.class);
@@ -56,9 +53,6 @@ public class InvokeActionsJob implements JobConsumer {
 
 	@Reference
 	private ResourceResolverFactory resolverFactory;
-
-	@Reference
-	private ActionRegistry registry;
 
 	@Reference
 	private ActionWhiteboard whiteboard;
@@ -74,7 +68,6 @@ public class InvokeActionsJob implements JobConsumer {
 			final String actionType;
 			if (page != null && page.getContentResource() != null) {
 				actionType = page.getContentResource().getResourceType();
-				performLegacyAction(actionType, page);
 				performAction(actionType, page.getProperties());
 			} else {
 				LOG.debug("Empty resource type for action page: " + path);
@@ -101,17 +94,4 @@ public class InvokeActionsJob implements JobConsumer {
 		final Map<String, String> immutableMap = Collections.unmodifiableMap(map);
 		whiteboard.invokeAction(actionType, immutableMap);
 	}
-
-	private void performLegacyAction(final String actionType, final Page page) throws Exception {
-		LOG.debug("Incoming action: " + actionType);
-		final Action action = registry.getAction(actionType);
-		if (action != null) {
-			LOG.debug("Performing action: " + actionType);
-			action.perform(page);
-			LOG.info("Action " + actionType + " finished sucessfuly");
-		} else {
-			LOG.debug("No legacy action found for: " + actionType);
-		}
-	}
-
 }
