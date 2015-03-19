@@ -87,6 +87,7 @@ public class ClientLoop implements Runnable {
 
 	public void stop() {
 		shouldStop = true;
+		((MultiThreadedHttpConnectionManager) client.getHttpConnectionManager()).shutdown();
 	}
 
 }
