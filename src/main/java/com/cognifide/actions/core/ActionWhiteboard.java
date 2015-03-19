@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.ReferencePolicy;
@@ -40,8 +40,8 @@ public class ActionWhiteboard {
 	@Reference(referenceInterface = ActionReceiver.class, policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE)
 	private final Set<ActionReceiver> receivers = new CopyOnWriteArraySet<ActionReceiver>();
 
-	@Activate
-	public void activate() {
+	@Deactivate
+	public void deactivate() {
 		receivers.clear();
 	}
 
