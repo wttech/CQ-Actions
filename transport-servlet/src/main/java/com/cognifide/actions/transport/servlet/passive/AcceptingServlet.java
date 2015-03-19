@@ -29,7 +29,7 @@ public class AcceptingServlet extends SlingAllMethodsServlet implements MessageS
 
 	private static final Logger LOG = LoggerFactory.getLogger(AcceptingServlet.class);
 
-	private static final long TIMEOUT = 60 * 1000;
+	private static final long TIMEOUT = 5 * 1000;
 
 	private static final long serialVersionUID = 661757446730532042L;
 
@@ -106,7 +106,7 @@ public class AcceptingServlet extends SlingAllMethodsServlet implements MessageS
 	}
 
 	@Override
-	public boolean sendMessage(String msg) throws InterruptedException {
+	public boolean sendMessage(String topic, String msg) {
 		final String msgId;
 		synchronized (this) {
 			if (msg.contains("\n")) {
@@ -118,6 +118,7 @@ public class AcceptingServlet extends SlingAllMethodsServlet implements MessageS
 			msgId = UUID.randomUUID().toString();
 			sentMessages.add(msgId);
 			writer.println(msgId);
+			writer.println(topic);
 			writer.println(msg);
 			writer.flush();
 			if (writer.checkError()) {
@@ -138,6 +139,8 @@ public class AcceptingServlet extends SlingAllMethodsServlet implements MessageS
 					receivedConfirmations.wait(TIMEOUT - elapsed);
 				}
 			}
+		} catch (InterruptedException e) {
+			return false;
 		} finally {
 			sentMessages.remove(msgId);
 		}

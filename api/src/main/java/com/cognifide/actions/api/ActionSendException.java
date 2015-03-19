@@ -36,4 +36,8 @@ public class ActionSendException extends Exception {
 		super(cause);
 	}
 
+	public ActionSendException(String message) {
+		super(message);
+	}
+
 }

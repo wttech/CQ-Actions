@@ -63,10 +63,11 @@ public class ClientLoop implements Runnable {
 
 		String msgId;
 		while ((msgId = bufferedReader.readLine()) != null) {
+			final String topic = bufferedReader.readLine();
 			final String msg = bufferedReader.readLine();
 			LOG.debug("Got message with id " + msgId);
 			for (MessageReceiver r : receivers) {
-				r.gotMessage(msg);
+				r.gotMessage(topic, msg);
 			}
 			try {
 				confirm(msgId);
