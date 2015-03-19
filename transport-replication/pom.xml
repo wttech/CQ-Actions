@@ -14,7 +14,7 @@
     <artifactId>com.cognifide.cq.actions.transport.replication</artifactId>
     <packaging>bundle</packaging>
 
-    <name>CQ Actions Replication</name>
+    <name>CQ Actions Replication Transport</name>
     <description>Replication-based implementation of the CQ Actions</description>
 
     <build>

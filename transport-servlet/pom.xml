@@ -14,7 +14,7 @@
     <artifactId>com.cognifide.cq.actions.transport.servlet</artifactId>
     <packaging>bundle</packaging>
 
-    <name>CQ Actions Servlet</name>
+    <name>CQ Actions Servlet Transport</name>
     <description>Servlet based implementation of the CQ Actions</description>
 
     <build>
@@ -30,6 +30,11 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+                    </instructions>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -60,10 +65,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.commons.json</artifactId>
-            <version>2.0.6</version>
-            <scope>provided</scope>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.3.1</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

@@ -1,25 +1,24 @@
 package com.cognifide.actions.transport.servlet;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.commons.json.JSONException;
-import org.apache.sling.commons.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.cognifide.actions.api.internal.ActionWhiteboard;
 import com.cognifide.actions.transport.servlet.active.MessageReceiver;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 @Component
 @Service
 public class ActionMessageReceiver implements MessageReceiver {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ActionMessageReceiver.class);
+	private static final Gson GSON = new Gson();
 
 	@Reference
 	private ActionWhiteboard whiteboard;
@@ -29,19 +28,13 @@ public class ActionMessageReceiver implements MessageReceiver {
 		if (!"ACTION".equals(topic)) {
 			return;
 		}
-		try {
-			final JSONObject json = new JSONObject(msg);
-			final String type = json.getString("type");
-			final JSONObject payload = json.getJSONObject("payload");
-			final Map<String, String> properties = new LinkedHashMap<String, String>();
-			final Iterator<String> keys = payload.keys();
-			while (keys.hasNext()) {
-				final String key = keys.next();
-				properties.put(key, payload.getString(key));
-			}
-			whiteboard.invokeAction(type, properties);
-		} catch (JSONException e) {
-			LOG.error("Can't parse incoming action", e);
+		final JsonObject json = GSON.fromJson(msg, JsonObject.class);
+		final String type = json.get("type").getAsString();
+		final JsonObject payload = json.get("payload").getAsJsonObject();
+		final Map<String, String> properties = new LinkedHashMap<String, String>();
+		for (Entry<String, JsonElement> e : payload.entrySet()) {
+			properties.put(e.getKey(), e.getValue().getAsString());
 		}
+		whiteboard.invokeAction(type, properties);
 	}
 }
