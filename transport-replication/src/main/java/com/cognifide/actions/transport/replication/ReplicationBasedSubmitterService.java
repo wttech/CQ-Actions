@@ -44,6 +44,7 @@ import org.apache.sling.api.resource.ResourceUtil;
 
 import com.cognifide.actions.api.ActionSendException;
 import com.cognifide.actions.api.ActionSubmitter;
+import com.cognifide.actions.core.ActionMapUtils;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.wcm.api.NameConstants;
 
@@ -60,13 +61,14 @@ public class ReplicationBasedSubmitterService implements ActionSubmitter {
 	private ResourceResolverFactory resolverFactory;
 
 	@Override
-	public void sendAction(String actionType, Map<String, String> properties) throws ActionSendException {
+	public void sendAction(String actionType, Map<String, Object> properties) throws ActionSendException {
 		ResourceResolver resolver = null;
 		try {
+			final Map<String, String> serializedMap = ActionMapUtils.serializeValues(properties);
 			resolver = resolverFactory.getAdministrativeResourceResolver(null);
 			final ModifiableValueMap map = createActionResource(resolver, actionType, "*");
-			map.putAll(properties);
-			map.put(ACTION_PROPERTIES, getArray(properties.keySet()));
+			map.putAll(serializedMap);
+			map.put(ACTION_PROPERTIES, getArray(serializedMap.keySet()));
 			resolver.commit();
 		} catch (LoginException e) {
 			throw new ActionSendException(e);

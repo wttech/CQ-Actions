@@ -30,6 +30,7 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.ReferencePolicy;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.api.resource.ValueMap;
 
 import com.cognifide.actions.api.ActionReceiver;
 import com.cognifide.actions.api.internal.ActionWhiteboard;
@@ -47,9 +48,10 @@ public class ActionWhiteboardService implements ActionWhiteboard {
 	}
 
 	public void invokeAction(String type, Map<String, String> properties) {
+		final ValueMap actionValueMap = new ActionValueMap(properties);
 		for (ActionReceiver receiver : receivers) {
 			if (type.equals(receiver.getType())) {
-				receiver.handleAction(properties);
+				receiver.handleAction(actionValueMap);
 			}
 		}
 	}

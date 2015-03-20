@@ -1,9 +1,8 @@
 package com.cognifide.actions.core;
 
-import java.util.Map;
-
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +20,7 @@ public class TestActionReceiver implements ActionReceiver {
 	}
 
 	@Override
-	public void handleAction(Map<String, String> properties) {
+	public void handleAction(ValueMap properties) {
 		LOG.info("Received new TEST action: " + properties);
 	}
 

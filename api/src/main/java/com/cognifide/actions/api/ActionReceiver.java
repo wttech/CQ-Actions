@@ -20,7 +20,7 @@
 
 package com.cognifide.actions.api;
 
-import java.util.Map;
+import org.apache.sling.api.resource.ValueMap;
 
 import aQute.bnd.annotation.ConsumerType;
 
@@ -42,5 +42,5 @@ public interface ActionReceiver {
 	 * 
 	 * @param properties
 	 */
-	void handleAction(Map<String, String> properties);
+	void handleAction(ValueMap properties);
 }

@@ -16,6 +16,7 @@ import org.apache.sling.api.resource.ResourceResolverFactory;
 
 import com.cognifide.actions.api.ActionSendException;
 import com.cognifide.actions.api.ActionSubmitter;
+import com.cognifide.actions.core.ActionMapUtils;
 import com.cognifide.actions.transport.servlet.passive.MessageSender;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -35,10 +36,12 @@ public class ActionMessageSubmitter implements ActionSubmitter {
 	private ResourceResolverFactory resolverFactory;
 
 	@Override
-	public void sendAction(String actionType, Map<String, String> properties) throws ActionSendException {
+	public void sendAction(String actionType, Map<String, Object> properties) throws ActionSendException {
+		final Map<String, String> serializedMap = ActionMapUtils.serializeValues(properties);
+
 		final JsonObject msg = new JsonObject();
 		msg.addProperty("type", actionType);
-		msg.add("payload", GSON.toJsonTree(properties));
+		msg.add("payload", GSON.toJsonTree(serializedMap));
 		final String serializedMsg = GSON.toJson(msg);
 		if (!sender.sendMessage("ACTION", serializedMsg)) {
 			try {

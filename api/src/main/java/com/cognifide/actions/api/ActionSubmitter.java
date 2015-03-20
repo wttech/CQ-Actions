@@ -40,5 +40,5 @@ public interface ActionSubmitter {
 	 * @param properties Properties of the action
 	 * @throws ActionSendException
 	 */
-	void sendAction(String actionType, Map<String, String> properties) throws ActionSendException;
+	void sendAction(String actionType, Map<String, Object> properties) throws ActionSendException;
 }
