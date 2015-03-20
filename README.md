@@ -22,8 +22,18 @@ Add dependency to your project:
 
     <dependency>
         <groupId>com.cognifide.cq.actions</groupId>
-        <artifactId>cq-actions</artifactId>
-        <version>2.1.0</version>
+        <artifactId>com.cognifide.cq.actions.api</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <groupId>com.cognifide.cq.actions</groupId>
+        <artifactId>com.cognifide.cq.actions.core</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <groupId>com.cognifide.cq.actions</groupId>
+        <artifactId>com.cognifide.cq.actions.transport.servlet</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
     </dependency>
 
 ## Usage
@@ -42,7 +52,7 @@ Implement data processing using `com.cognifide.actions.api.ActionReceiver` inter
         }
     
         @Override
-        public void handleAction(Map<String, String> properties) {
+        public void handleAction(ValueMap properties) {
             LOGGER.info("received action: " + properties);
         }
     
@@ -53,9 +63,10 @@ On publish instance, whenever you would like to invoke any action on author inst
     @Reference
     private ActionSubmitter actionSubmitter;
     
-    Map<String, String> properties = new HashMap<String, String>();
+    Map<String, String> properties = new HashMap<String, Object>();
     properties.put("company name", "Cognifide");
     properties.put("city", "Poznan");
+    properties.put("awesome", true);
     actionSubmitter.sendAction("my-action", properties);
 
 Once, the `sendAction()` is invoked, the action would be reverse-replicated to the author instance and one of the `EventHandler`s (`ActionPageListener`) will intercept the node creation event and fire proper action.
