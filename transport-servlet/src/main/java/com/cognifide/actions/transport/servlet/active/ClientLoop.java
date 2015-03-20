@@ -3,12 +3,17 @@ package com.cognifide.actions.transport.servlet.active;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Set;
 
+import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.slf4j.Logger;
@@ -28,12 +33,19 @@ public class ClientLoop implements Runnable {
 
 	private volatile boolean shouldStop = false;
 
-	public ClientLoop(Set<MessageReceiver> receivers, String serverUrl) {
+	public ClientLoop(Set<MessageReceiver> receivers, String serverUrl, String username, String password)
+			throws URISyntaxException {
 		this.receivers = receivers;
 		this.serverUrl = serverUrl;
 
 		final HttpConnectionManager connManager = new MultiThreadedHttpConnectionManager();
-		this.client = new HttpClient(connManager);
+		client = new HttpClient(connManager);
+		client.getParams().setAuthenticationPreemptive(true);
+		final Credentials defaultcreds = new UsernamePasswordCredentials(username, password);
+		final URI serverUri = new URI(serverUrl);
+		final int port = serverUri.getPort() == -1 ? 80 : serverUri.getPort();
+		client.getState().setCredentials(new AuthScope(serverUri.getHost(), port, AuthScope.ANY_REALM),
+				defaultcreds);
 	}
 
 	@Override

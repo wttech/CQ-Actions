@@ -63,10 +63,11 @@ public class AcceptingServlet extends SlingAllMethodsServlet implements MessageS
 
 	public void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
 			throws ServletException, IOException {
-		if (!isPublish()) {
-			super.doGet(request, response);
+		if (!authenticate(request, response)) {
 			return;
 		}
+		response.setContentType("text/plain; charset=utf-8");
+
 		synchronized (connectionHold) {
 			connectionHold.notifyAll();
 		}
@@ -84,8 +85,7 @@ public class AcceptingServlet extends SlingAllMethodsServlet implements MessageS
 
 	public void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response)
 			throws ServletException, IOException {
-		if (!isPublish()) {
-			super.doPost(request, response);
+		if (!authenticate(request, response)) {
 			return;
 		}
 
@@ -151,4 +151,17 @@ public class AcceptingServlet extends SlingAllMethodsServlet implements MessageS
 		return slingSettings.getRunModes().contains("publish");
 	}
 
+	private boolean authenticate(SlingHttpServletRequest request, SlingHttpServletResponse response)
+			throws IOException {
+		final String userId = request.getResourceResolver().getUserID();
+		if (!isPublish()) {
+			response.sendError(404);
+			return false;
+		} else if (!"admin".equals(userId)) {
+			response.sendError(403);
+			return false;
+		} else {
+			return true;
+		}
+	}
 }
