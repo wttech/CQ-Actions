@@ -16,8 +16,8 @@
     <version>3.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Cognifide Actions</name>
-    <description>CQ actions package</description>
+    <name>CQ Actions Parent</name>
+    <description>CQ Actions package</description>
     <url>https://github.com/Cognifide/CQ-Actions</url>
     <licenses>
         <license>
@@ -57,8 +57,8 @@
     <modules>
         <module>api</module>
         <module>core</module>
-        <module>transport-servlet</module>
-        <module>transport-replication</module>
+        <module>msg.push</module>
+        <module>msg.replication</module>
     </modules>
 
     <build>

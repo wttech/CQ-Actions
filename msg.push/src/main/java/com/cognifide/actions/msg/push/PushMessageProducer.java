@@ -18,30 +18,34 @@
  * #L%
  */
 
-package com.cognifide.actions.core;
+package com.cognifide.actions.msg.push;
+
+import java.util.Map;
 
 import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.api.resource.ValueMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.cognifide.actions.api.ActionReceiver;
+import com.cognifide.actions.api.internal.MessageProducer;
+import com.cognifide.actions.msg.push.api.PushSender;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 @Component
 @Service
-public class TestActionReceiver implements ActionReceiver {
+public class PushMessageProducer implements MessageProducer {
 
-	private static final Logger LOG = LoggerFactory.getLogger(TestActionReceiver.class);
+	private static final Gson GSON = new Gson();
 
-	@Override
-	public String getType() {
-		return "TEST";
-	}
+	@Reference
+	private PushSender sender;
 
 	@Override
-	public void handleAction(ValueMap properties) {
-		LOG.info("Received new TEST action: " + properties);
+	public boolean sendMessage(String type, Map<String, String> message) {
+		final JsonObject msg = new JsonObject();
+		msg.addProperty("type", type);
+		msg.add("payload", GSON.toJsonTree(message));
+		final String serializedMsg = GSON.toJson(msg);
+		return sender.sendMessage("ACTION", serializedMsg);
 	}
-
 }

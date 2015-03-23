@@ -18,27 +18,8 @@
  * #L%
  */
 
-package com.cognifide.actions.api;
+package com.cognifide.actions.msg.push.api;
 
-import java.util.Map;
-
-import aQute.bnd.annotation.ProviderType;
-
-/**
- * Service that allows to send an action.
- * 
- * @author Tomasz Rękawek
- *
- */
-@ProviderType
-public interface ActionSubmitter {
-
-	/**
-	 * Send action with given type and properties
-	 * 
-	 * @param actionType Type of the action (must be the same as the one accepted by {@link ActionReceiver}.
-	 * @param properties Properties of the action
-	 * @throws ActionSendException
-	 */
-	void sendAction(String actionType, Map<String, Object> properties) throws ActionSendException;
+public interface PushSender {
+	boolean sendMessage(String topic, String msg);
 }
