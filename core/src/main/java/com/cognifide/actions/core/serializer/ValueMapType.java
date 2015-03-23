@@ -78,6 +78,39 @@ public enum ValueMapType {
 			return Boolean.parseBoolean(string);
 		}
 	},
+	FLOAT(Float.class) {
+		@Override
+		protected String doSerialize(Object o) {
+			return Float.toString((float) o);
+		}
+
+		@Override
+		public Object deserialize(String string) {
+			return Float.parseFloat(string);
+		}
+	},
+	BYTE(Byte.class) {
+		@Override
+		protected String doSerialize(Object o) {
+			return Byte.toString((byte) o);
+		}
+
+		@Override
+		public Object deserialize(String string) {
+			return Byte.parseByte(string);
+		}
+	},
+	CHARACTER(Character.class) {
+		@Override
+		protected String doSerialize(Object o) {
+			return Character.toString((char) o);
+		}
+
+		@Override
+		public Object deserialize(String string) {
+			return (char) Integer.parseInt(string);
+		}
+	},
 	CALENDAR(Calendar.class) {
 		@Override
 		protected String doSerialize(Object o) {
