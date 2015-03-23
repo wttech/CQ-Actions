@@ -1,4 +1,4 @@
-package com.cognifide.actions.api.internal;
+package com.cognifide.actions.msg.api;
 
 import java.util.Map;
 

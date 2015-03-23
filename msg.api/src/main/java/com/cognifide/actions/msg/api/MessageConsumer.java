@@ -1,8 +1,6 @@
-package com.cognifide.actions.api.internal;
+package com.cognifide.actions.msg.api;
 
 import java.util.Map;
-
-import com.cognifide.actions.api.ActionReceiver;
 
 import aQute.bnd.annotation.ProviderType;
 
