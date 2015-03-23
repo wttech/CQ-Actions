@@ -32,9 +32,9 @@ import org.apache.sling.api.resource.PersistenceException;
 
 import com.cognifide.actions.api.ActionSendException;
 import com.cognifide.actions.api.ActionSubmitter;
+import com.cognifide.actions.core.api.MessageProducer;
 import com.cognifide.actions.core.persist.MessagePersistenceService;
 import com.cognifide.actions.core.serializer.ValueMapType;
-import com.cognifide.actions.msg.api.MessageProducer;
 
 @Component
 @Service

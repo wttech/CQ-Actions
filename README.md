@@ -27,11 +27,6 @@ Add dependency to your project:
     </dependency>
     <dependency>
         <groupId>com.cognifide.cq.actions</groupId>
-        <artifactId>com.cognifide.cq.actions.msg.api</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-        <groupId>com.cognifide.cq.actions</groupId>
         <artifactId>com.cognifide.cq.actions.core</artifactId>
         <version>3.0.0-SNAPSHOT</version>
     </dependency>

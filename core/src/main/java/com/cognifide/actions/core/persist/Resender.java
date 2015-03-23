@@ -36,8 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cognifide.actions.api.ActionSendException;
+import com.cognifide.actions.core.api.MessageProducer;
 import com.cognifide.actions.core.serializer.MessageSerializer;
-import com.cognifide.actions.msg.api.MessageProducer;
 
 @Component
 @Service

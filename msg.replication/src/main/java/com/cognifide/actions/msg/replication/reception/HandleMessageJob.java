@@ -36,8 +36,8 @@ import org.apache.sling.event.jobs.consumer.JobConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cognifide.actions.core.api.MessageConsumer;
 import com.cognifide.actions.core.serializer.MessageSerializer;
-import com.cognifide.actions.msg.api.MessageConsumer;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 

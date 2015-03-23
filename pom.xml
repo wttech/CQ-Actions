@@ -56,7 +56,6 @@
 
     <modules>
         <module>api</module>
-        <module>msg.api</module>
         <module>core</module>
         <module>msg.push</module>
         <module>msg.replication</module>

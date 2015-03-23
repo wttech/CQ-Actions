@@ -28,7 +28,7 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 
-import com.cognifide.actions.msg.api.MessageConsumer;
+import com.cognifide.actions.core.api.MessageConsumer;
 import com.cognifide.actions.msg.push.api.PushReceiver;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

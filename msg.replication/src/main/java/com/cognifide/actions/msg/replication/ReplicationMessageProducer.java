@@ -43,8 +43,8 @@ import org.apache.sling.api.resource.ResourceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cognifide.actions.core.api.MessageProducer;
 import com.cognifide.actions.core.serializer.MessageSerializer;
-import com.cognifide.actions.msg.api.MessageProducer;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.wcm.api.NameConstants;
 
