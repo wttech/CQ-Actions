@@ -56,7 +56,7 @@ public class MessageSocket implements WebSocket, OnTextMessage {
 
 	@Override
 	public synchronized void onMessage(String msg) {
-		LOG.info("Incoming message " + msg);
+		LOG.debug("Incoming message " + msg);
 		confirmed.set(true);
 		notifyAll();
 	}
