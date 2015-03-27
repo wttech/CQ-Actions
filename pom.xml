@@ -59,6 +59,7 @@
         <module>core</module>
         <module>msg.push</module>
         <module>msg.replication</module>
+        <module>msg.websocket</module>
     </modules>
 
     <build>
