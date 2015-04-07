@@ -1,5 +1,3 @@
-![Cognifide logo](http://cognifide.com/~/media/wireframe/int/images/cognifide_logo.png)
-
 # CQ Actions
 
 ## Purpose
