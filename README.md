@@ -4,7 +4,7 @@
 
 ## Purpose
 
-CQ Actions is a mechanism serving as the underlying transport layer, which ensures that data is properly and safely transported from publish instances to author instance and is processed on the latter. 
+CQ Actions is a mechanism serving as the underlying transport layer, which ensures that data is properly and safely transported from publish instances to author instance and is processed on the latter.
 
 ## Features
 
@@ -77,7 +77,7 @@ CQ Actions supports a few types of the transport layer to get the message delive
 
 ### Reverse-replication
 
-This is the classic approach, where messages are serialized into pages and the standard reverse-replication mechanism transfers them to the author. The author instance connects to the publish every 30 seconds to check if there is some user-generated content to reverse-replicated, so it may take a while before the `ActionReceiver` gets its message.
+This is the classic approach, where messages are serialized into pages and the standard reverse-replication mechanism transfers them to the author. The author instance connects to the publish every 30 seconds to check if there is some user-generated content to be reverse-replicated, so it may take a while before the `ActionReceiver` gets its message.
 
 * compatible with: CQ 5.6.1 and AEM 6.
 * bundle to use: `com.cognifide.cq.actions.msg.replication`.
