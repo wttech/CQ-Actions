@@ -1,3 +1,5 @@
+![Cognifide logo](http://cognifide.github.io/Carty/assets/media/cognifide_logo.png)
+
 # CQ Actions
 
 ## Purpose
