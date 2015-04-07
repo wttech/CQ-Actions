@@ -32,8 +32,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferencePolicy;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
@@ -49,7 +47,6 @@ import com.day.cq.replication.ConfigManager.ConfigEvent;
 import com.day.cq.replication.ConfigManager.ConfigEventListener;
 
 @Component
-@Properties({ @Property(name = "serverUrl", value = { "http://localhost:4503" }) })
 @References({ @Reference(name = "receiver", referenceInterface = SocketReceiver.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC) })
 public class SocketClient implements ConfigEventListener {
 
