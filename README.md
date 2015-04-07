@@ -8,7 +8,7 @@ CQ Actions is a mechanism serving as the underlying transport layer, which ensur
 
 ## Features
 
-* Seamless communication from CQ publish to author using reverse replication
+* Seamless communication from CQ publish to author
 * Messages contain key-value map, where key is a `String` and value is a `String`, `Calendar` or a primitive (`int`, `float`, etc.)
 * You may register any number of author services listening to a given message topic
 
