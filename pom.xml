@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -9,12 +12,12 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cognifide.cq.actions</groupId>
-    <artifactId>cq-actions</artifactId>
-    <version>2.1.1-SNAPSHOT</version>
-    <packaging>bundle</packaging>
+    <artifactId>com.cognifide.cq.actions.parent</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-    <name>Cognifide Actions</name>
-    <description>CQ actions package</description>
+    <name>CQ Actions Parent</name>
+    <description>CQ Actions package</description>
     <url>https://github.com/Cognifide/CQ-Actions</url>
     <licenses>
         <license>
@@ -23,13 +26,13 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    <inceptionYear>2012</inceptionYear>
+    <inceptionYear>2015</inceptionYear>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <sling.url>http://localhost:4502/system/console</sling.url>
-        <sling.username>admin</sling.username>
-        <sling.password>admin</sling.password>
+        <instance.url>http://localhost:4502</instance.url>
+        <instance.username>admin</instance.username>
+        <instance.password>admin</instance.password>
     </properties>
 
     <organization>
@@ -39,8 +42,8 @@
 
     <developers>
         <developer>
-            <name>Mateusz Chrominski</name>
-            <email>mateusz.chrominski@cognifide.com</email>
+            <name>Tomasz Rękawek</name>
+            <email>tomasz.rekawek@cognifide.com</email>
             <organization>Cognifide</organization>
         </developer>
     </developers>
@@ -51,73 +54,67 @@
         <url>https://github.com/Cognifide/CQ-Actions</url>
     </scm>
 
+    <modules>
+        <module>api</module>
+        <module>core</module>
+        <module>msg.push</module>
+        <module>msg.replication</module>
+        <module>msg.websocket</module>
+    </modules>
+
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-                <version>1.15.0</version>
-                <executions>
-                    <execution>
-                        <id>generate-scr-scrdescriptor</id>
-                        <goals>
-                            <goal>scr</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <fork>true</fork>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <compilerVersion>1.6</compilerVersion>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.5.3</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Import-Package>
-                            org.apache.sling.event.jobs.consumer;version="[1.0,2.0)",
-                            *
-                        </Import-Package>
-                        <Export-Package>com.cognifide.actions.api</Export-Package>
-                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Name>${project.name}</Bundle-Name>
-                        <Bundle-Vendor>Cognifide Ltd.</Bundle-Vendor>
-                        <Embed-Transitive>false</Embed-Transitive>
-                    </instructions>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>baseline</id>
-                        <goals>
-                            <goal>baseline</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>maven-sling-plugin</artifactId>
-                <version>2.1.0</version>
-                <configuration>
-                    <bundleFileName>${project.build.directory}/${project.build.finalName}.jar</bundleFileName>
-                    <user>${sling.username}</user>
-                    <password>${sling.password}</password>
-                    <slingUrl>${sling.url}</slingUrl>
-                </configuration>
-            </plugin>
-        </plugins>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-scr-plugin</artifactId>
+                    <version>1.15.0</version>
+                    <executions>
+                        <execution>
+                            <id>generate-scr-scrdescriptor</id>
+                            <goals>
+                                <goal>scr</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.3.2</version>
+                    <configuration>
+                        <fork>true</fork>
+                        <source>1.7</source>
+                        <target>1.7</target>
+                        <compilerVersion>1.6</compilerVersion>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>2.5.3</version>
+                    <extensions>true</extensions>
+                    <executions>
+                        <execution>
+                            <id>baseline</id>
+                            <goals>
+                                <goal>baseline</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.sling</groupId>
+                    <artifactId>maven-sling-plugin</artifactId>
+                    <version>2.1.0</version>
+                    <configuration>
+                        <bundleFileName>${project.build.directory}/${project.build.finalName}.jar</bundleFileName>
+                        <user>${instance.username}</user>
+                        <password>${instance.password}</password>
+                        <slingUrl>${instance.url}/system/console</slingUrl>
+                    </configuration>
+                </plugin>
+
                 <!--This plugin's configuration is used to store Eclipse 
                     m2e settings only. It has no influence on the Maven build itself. -->
                 <plugin>
@@ -147,6 +144,7 @@
             </plugins>
         </pluginManagement>
     </build>
+
 
     <dependencies>
         <!-- osgi -->
@@ -184,18 +182,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.commons.scheduler</artifactId>
-            <version>2.3.4</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.event</artifactId>
-            <version>3.1.5-R1485539</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.settings</artifactId>
             <version>1.2.2</version>
             <scope>provided</scope>
@@ -204,28 +190,6 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.jcr.api</artifactId>
             <version>2.1.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- CQ -->
-        <dependency>
-            <groupId>com.day.cq.wcm</groupId>
-            <artifactId>cq-wcm-api</artifactId>
-            <version>5.5.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.day.cq</groupId>
-            <artifactId>cq-commons</artifactId>
-            <version>5.5.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- jcr -->
-        <dependency>
-            <groupId>javax.jcr</groupId>
-            <artifactId>jcr</artifactId>
-            <version>2.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -250,8 +214,8 @@
             <version>2.1.0</version>
             <scope>provided</scope>
         </dependency>
-
     </dependencies>
+
     <profiles>
         <profile>
             <id>release-sign-artifacts</id>
