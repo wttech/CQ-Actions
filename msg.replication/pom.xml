@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.cognifide.cq.actions</groupId>
         <artifactId>com.cognifide.cq.actions.parent</artifactId>
-        <version>4.0.0</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -43,7 +43,7 @@
         <dependency>
             <groupId>com.cognifide.cq.actions</groupId>
             <artifactId>com.cognifide.cq.actions.core</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
