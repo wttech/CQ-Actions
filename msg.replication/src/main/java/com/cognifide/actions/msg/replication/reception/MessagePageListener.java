@@ -32,7 +32,6 @@ import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.SlingConstants;
-import org.apache.sling.event.EventUtil;
 import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.event.Event;
@@ -68,7 +67,7 @@ public class MessagePageListener implements EventHandler {
 	 */
 	@Override
 	public void handleEvent(Event event) {
-		if (!(isAuthor() && EventUtil.isLocal(event))) {
+		if (!(isAuthor() && isLocal(event))) {
 			return;
 		}
 		final String path = (String) event.getProperty("path");
@@ -78,10 +77,14 @@ public class MessagePageListener implements EventHandler {
 
 		final Map<String, Object> payload = new HashMap<String, Object>();
 		payload.put(SlingConstants.PROPERTY_PATH, StringUtils.removeEnd(path, JCR_CONTENT_SUFFIX));
-		jobManager.addJob(HandleMessageJob.TOPIC, null, payload);
+		jobManager.addJob(HandleMessageJob.TOPIC, payload);
 	}
 
 	private boolean isAuthor() {
 		return slingSettings.getRunModes().contains("author");
+	}
+
+	private boolean isLocal(Event event) {
+		return event.getProperty("event.application") == null;
 	}
 }

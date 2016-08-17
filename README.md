@@ -23,17 +23,17 @@ Add dependencies to your project:
     <dependency>
         <groupId>com.cognifide.cq.actions</groupId>
         <artifactId>com.cognifide.cq.actions.api</artifactId>
-        <version>3.0.0</version>
+        <version>4.0.0</version>
     </dependency>
     <dependency>
         <groupId>com.cognifide.cq.actions</groupId>
         <artifactId>com.cognifide.cq.actions.core</artifactId>
-        <version>3.0.0</version>
+        <version>4.0.0</version>
     </dependency>
     <dependency>
         <groupId>com.cognifide.cq.actions</groupId>
         <artifactId><!-- choose appropriate transport type, see below --></artifactId>
-        <version>3.0.0</version>
+        <version>4.0.0</version>
     </dependency>
 
 ## Usage

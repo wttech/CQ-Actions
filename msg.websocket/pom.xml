@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.cognifide.cq.actions</groupId>
         <artifactId>com.cognifide.cq.actions.parent</artifactId>
-        <version>3.0.1-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.cognifide.cq.actions</groupId>
             <artifactId>com.cognifide.cq.actions.core</artifactId>
-            <version>3.0.1-SNAPSHOT</version>
+            <version>4.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -53,6 +53,17 @@
         </dependency>
 
         <!-- websocket server -->
+        <dependency>
+            <groupId>com.adobe.granite.felix</groupId>
+            <artifactId>org.apache.felix.http.jetty</artifactId>
+            <version>3.1.6-B002</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>9.2.14.v20151106</version>
+        </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-websocket</artifactId>
@@ -85,7 +96,7 @@
         <dependency>
             <groupId>com.adobe.granite</groupId>
             <artifactId>com.adobe.granite.replication.core</artifactId>
-            <version>5.12.2</version>
+            <version>6.0.14</version>
             <scope>provided</scope>
         </dependency>
 
