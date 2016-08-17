@@ -61,9 +61,8 @@ public class MessagePageListener implements EventHandler {
 	/**
 	 * Converts the JCR tree change event (creating new cq:Page node) to the the OSGI event with topic
 	 * com/cognifide/actions/defaultActionsTopic and sends it the queue.
-	 * 
-	 * @param event
-	 * @throws RepositoryException
+	 *
+	 * @param event The event that occurred.
 	 */
 	@Override
 	public void handleEvent(Event event) {

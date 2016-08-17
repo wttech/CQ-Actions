@@ -38,7 +38,7 @@ public interface ActionSubmitter {
 	 * 
 	 * @param actionType Type of the action (must be the same as the one accepted by {@link ActionReceiver}.
 	 * @param properties Properties of the action
-	 * @throws ActionSendException
+	 * @throws ActionSendException Exception that is thrown when it was impossible to send action
 	 */
 	void sendAction(String actionType, Map<String, Object> properties) throws ActionSendException;
 }

@@ -6,7 +6,7 @@ import aQute.bnd.annotation.ProviderType;
 
 /**
  * An internal service that transforms incoming message into an action and sends it to appropriate
- * {@link ActionReceiver}.
+ * {@link com.cognifide.actions.api.ActionReceiver}.
  * 
  * @author Tomasz Rękawek
  *
