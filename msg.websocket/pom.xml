@@ -92,19 +92,12 @@
             <version>2.3.19</version>
         </dependency>
 
-        <!-- replication -->
+        <!-- aem -->
         <dependency>
-            <groupId>com.adobe.granite</groupId>
-            <artifactId>com.adobe.granite.replication.core</artifactId>
-            <version>6.0.14</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- servlet -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
+            <groupId>com.adobe.aem</groupId>
+            <artifactId>uber-jar</artifactId>
+            <version>6.2.0</version>
+            <classifier>obfuscated-apis</classifier>
             <scope>provided</scope>
         </dependency>
     </dependencies>
