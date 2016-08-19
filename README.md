@@ -14,7 +14,11 @@ CQ Actions is a mechanism serving as the underlying transport layer, which ensur
 
 ## Prerequisites
 
+CQ Actions version below 4.0.0:
 * CQ 5.6.1 or AEM 6
+
+CQ Actions version 4.0.0:
+* AEM 6.2
 
 ## Installation
 
@@ -79,21 +83,21 @@ CQ Actions supports a few types of the transport layer to get the message delive
 
 This is the classic approach, where messages are serialized into pages and the standard reverse-replication mechanism transfers them to the author. The author instance connects to the publish every 30 seconds to check if there is some user-generated content to be reverse-replicated, so it may take a while before the `ActionReceiver` gets its message.
 
-* compatible with: CQ 5.6.1 and AEM 6.
+* compatible with: CQ 5.6.1 and AEM 6 (in versions below 4.0.0) and with AEM 6.2 in version 4.0.0.
 * bundle to use: `com.cognifide.cq.actions.msg.replication`.
 
 ### Push
 
 The author instance `GET`s the publish `/bin/cognifide/cq-actions` servlet. The servlet doesn't drop the connection, but holds it and puts each serialized action as a response fragments. Author confirms receiving action with a separate `POST`. The messages are delivers immediately.
 
-* compatible with: CQ 5.6.1 and AEM 6.
+* compatible with: CQ 5.6.1 and AEM 6 (in versions below 4.0.0) and with AEM 6.2 in version 4.0.0.
 * bundle to use: `com.cognifide.cq.actions.msg.push`.
 
 ### Websockets
 
 The author connects to the publish using websocket. Created connection is used to deliver messages, which can be received immediately.
 
-* compatible with: AEM 6.
+* compatible with: AEM 6 (in versions below 4.0.0). Currently this type of messaging is not supported on AEM 6.2.
 * bundle to use: `com.cognifide.cq.actions.msg.websocket`.
 
 # Commercial Support

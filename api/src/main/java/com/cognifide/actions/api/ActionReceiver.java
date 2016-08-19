@@ -34,13 +34,15 @@ public interface ActionReceiver {
 
 	/**
 	 * Returns action type for this action receiver
+	 *
+	 * @return action type
 	 */
 	String getType();
 
 	/**
 	 * Handle incoming action with given type.
 	 * 
-	 * @param properties
+	 * @param properties Map of the properties send as an argument of the incoming action
 	 */
 	void handleAction(ValueMap properties);
 }
