@@ -54,12 +54,6 @@
 
         <!-- websocket server -->
         <dependency>
-            <groupId>com.adobe.granite.felix</groupId>
-            <artifactId>org.apache.felix.http.jetty</artifactId>
-            <version>3.1.6-B002</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
             <version>9.2.14.v20151106</version>
