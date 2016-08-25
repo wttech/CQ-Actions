@@ -3,6 +3,8 @@
 .project
 .classpath
 target
+.idea
+*.iml
 
 # Package Files #
 *.jar
