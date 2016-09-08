@@ -22,7 +22,6 @@ package com.cognifide.actions.msg.websocket.servlet;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.felix.scr.annotations.Activate;
@@ -33,12 +32,15 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.apache.sling.settings.SlingSettingsService;
-import org.eclipse.jetty.websocket.WebSocket;
-import org.eclipse.jetty.websocket.WebSocketFactory;
-import org.eclipse.jetty.websocket.WebSocketFactory.Acceptor;
+import org.eclipse.jetty.websocket.api.WebSocketBehavior;
+import org.eclipse.jetty.websocket.api.WebSocketPolicy;
+import org.eclipse.jetty.websocket.server.WebSocketServerFactory;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
+import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 
 @SlingServlet(paths = MessageWebsocketServlet.PATH, methods = "GET")
-public class MessageWebsocketServlet extends SlingSafeMethodsServlet implements Acceptor {
+public class MessageWebsocketServlet extends SlingSafeMethodsServlet implements WebSocketCreator {
 
 	private static final long serialVersionUID = -3631947705678810095L;
 
@@ -50,16 +52,21 @@ public class MessageWebsocketServlet extends SlingSafeMethodsServlet implements 
 	@Reference
 	private SlingSettingsService slingSettings;
 
-	private WebSocketFactory webSocketFactory;
+	private WebSocketServerFactory webSocketFactory;
 
 	@Override
-	public WebSocket doWebSocketConnect(HttpServletRequest request, String protocol) {
+	public MessageSocket createWebSocket(ServletUpgradeRequest servletUpgradeRequest,
+			ServletUpgradeResponse servletUpgradeResponse) {
 		return sockets.createSocket();
 	}
 
 	@Activate
 	public void activate() throws Exception {
-		webSocketFactory = new WebSocketFactory(this, 8192);
+		WebSocketBehavior behavior = WebSocketBehavior.SERVER;
+		WebSocketPolicy policy = new WebSocketPolicy(behavior);
+		webSocketFactory = new WebSocketServerFactory(policy);
+		webSocketFactory.register(MessageSocket.class);
+		webSocketFactory.setCreator(this);
 		webSocketFactory.start();
 	}
 
@@ -76,11 +83,6 @@ public class MessageWebsocketServlet extends SlingSafeMethodsServlet implements 
 
 		final HttpServletResponse wrappedResponse = new WebsocketResponse(slingResponse);
 		webSocketFactory.acceptWebSocket(slingRequest, wrappedResponse);
-	}
-
-	@Override
-	public boolean checkOrigin(HttpServletRequest paramHttpServletRequest, String paramString) {
-		return true;
 	}
 
 	private boolean isPublish() {
@@ -101,5 +103,4 @@ public class MessageWebsocketServlet extends SlingSafeMethodsServlet implements 
 			return true;
 		}
 	}
-
 }

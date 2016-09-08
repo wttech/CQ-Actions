@@ -25,7 +25,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Service;
-import org.eclipse.jetty.websocket.WebSocket;
 
 import com.cognifide.actions.msg.websocket.api.SocketSender;
 
@@ -42,8 +41,8 @@ public class ConnectedSockets implements SocketClosedListener, SocketSender {
 	}
 
 	@Override
-	public void socketClosed(WebSocket websocket) {
-		sockets.remove(websocket);
+	public void socketClosed(MessageSocket messageSocket) {
+		sockets.remove(messageSocket);
 	}
 
 	public boolean sendMessage(String message) {

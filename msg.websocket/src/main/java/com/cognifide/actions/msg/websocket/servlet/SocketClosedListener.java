@@ -20,8 +20,6 @@
 
 package com.cognifide.actions.msg.websocket.servlet;
 
-import org.eclipse.jetty.websocket.WebSocket;
-
 public interface SocketClosedListener {
-	void socketClosed(WebSocket websocket);
+	void socketClosed(MessageSocket socket);
 }
