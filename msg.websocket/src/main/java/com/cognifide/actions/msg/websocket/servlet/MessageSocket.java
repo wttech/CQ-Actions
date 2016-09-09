@@ -23,12 +23,18 @@ package com.cognifide.actions.msg.websocket.servlet;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.jetty.websocket.WebSocket;
-import org.eclipse.jetty.websocket.WebSocket.OnTextMessage;
+import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MessageSocket implements WebSocket, OnTextMessage {
+@WebSocket
+public class MessageSocket {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MessageSocket.class);
 
@@ -36,38 +42,21 @@ public class MessageSocket implements WebSocket, OnTextMessage {
 
 	private final AtomicBoolean confirmed = new AtomicBoolean(false);
 
-	private Connection connection;
+	private Session session;
 
 	public MessageSocket(SocketClosedListener listener) {
 		this.listener = listener;
 	}
 
-	@Override
-	public void onOpen(Connection connection) {
-		LOG.info("Socket opened");
-		this.connection = connection;
-	}
-
-	@Override
-	public void onClose(int closeCode, String msg) {
-		LOG.info("Socket closed");
-		listener.socketClosed(this);
-	}
-
-	@Override
-	public synchronized void onMessage(String msg) {
-		LOG.debug("Incoming message " + msg);
-		confirmed.set(true);
-		notifyAll();
-	}
-
 	public synchronized boolean sendMessage(String msg) {
 		confirmed.set(false);
-		if (connection == null) {
+		if (session == null) {
 			return false;
 		}
 		try {
-			connection.sendMessage(msg);
+			RemoteEndpoint remote = session.getRemote();
+			remote.sendString(msg);
+			remote.flush();
 			wait(5000);
 			return confirmed.getAndSet(false);
 		} catch (InterruptedException | IOException e) {
@@ -76,4 +65,27 @@ public class MessageSocket implements WebSocket, OnTextMessage {
 		}
 	}
 
+	@OnWebSocketClose
+	public void onWebSocketClose(int i, String s) {
+		LOG.info("Socket closed");
+		listener.socketClosed(this);
+	}
+
+	@OnWebSocketConnect
+	public void onWebSocketConnect(Session session) {
+		LOG.info("Socket opened");
+		this.session = session;
+	}
+
+	@OnWebSocketError
+	public void onWebSocketError(Throwable e) {
+		LOG.debug("Socket Error occured", e);
+	}
+
+	@OnWebSocketMessage
+	public synchronized void OnWebSocketMessage(String msg) {
+		LOG.debug("Incoming message " + msg);
+		confirmed.set(true);
+		notifyAll();
+	}
 }
