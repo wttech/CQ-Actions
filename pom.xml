@@ -214,13 +214,13 @@
             <dependency>
                 <groupId>com.cognifide.cq.actions</groupId>
                 <artifactId>com.cognifide.cq.actions.api</artifactId>
-                <version>5.0.0-SNAPSHOT</version>
+                <version>${project.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.cognifide.cq.actions</groupId>
                 <artifactId>com.cognifide.cq.actions.core</artifactId>
-                <version>5.0.0-SNAPSHOT</version>
+                <version>${project.version}</version>
                 <scope>provided</scope>
             </dependency>
 

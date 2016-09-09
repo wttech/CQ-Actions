@@ -42,7 +42,7 @@ import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 @SlingServlet(paths = MessageWebsocketServlet.PATH, methods = "GET")
 public class MessageWebsocketServlet extends SlingSafeMethodsServlet implements WebSocketCreator {
 
-	private static final long serialVersionUID = -3631947705678810095L;
+	private static final long serialVersionUID = 3128232063640186422L;
 
 	public static final String PATH = "/bin/cognifide/action/socket";
 
