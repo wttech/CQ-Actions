@@ -20,7 +20,7 @@
                     <artifactId>maven-assembly-plugin</artifactId>
                     <configuration>
                         <appendAssemblyId>false</appendAssemblyId>
-                        <finalName>${assembly.name}-config-${project.version}-${assembly.descriptor}</finalName>
+                        <finalName>${assembly.name}-config-${project.version}</finalName>
                         <descriptors>
                             <descriptor>src/main/assembly/config.xml</descriptor>
                         </descriptors>
@@ -30,8 +30,8 @@
                     <groupId>com.cognifide.maven.plugins</groupId>
                     <artifactId>maven-crx-plugin</artifactId>
                     <configuration>
-                        <packageFileName>${project.build.directory}/${assembly.name}-config-${project.version}-${assembly.descriptor}.zip</packageFileName>
-                        <packageName>${assembly.name}-config-${assembly.descriptor}</packageName>
+                        <packageFileName>${project.build.directory}/${assembly.name}-config-${project.version}.zip</packageFileName>
+                        <packageName>${assembly.name}-config</packageName>
                     </configuration>
                 </plugin>
                 <plugin>
