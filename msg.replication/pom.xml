@@ -36,6 +36,14 @@
                     </instructions>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <!-- skipping the assembly in root pom (but not in children) -->
+                <inherited>false</inherited>
+                <configuration>
+                    <skipAssembly>true</skipAssembly>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -53,7 +61,7 @@
         <dependency>
             <groupId>com.adobe.aem</groupId>
             <artifactId>uber-jar</artifactId>
-            <classifier>obfuscated-apis</classifier>
+            <classifier>apis</classifier>
         </dependency>
     </dependencies>
 </project>

@@ -1,0 +1,34 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+	<id>${assembly.descriptor}</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<fileSet>
+			<directory>src/main/cq/jcr_root</directory>
+			<outputDirectory>/jcr_root</outputDirectory>
+			<excludes>
+				<exclude>**/.vlt</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/cq/META-INF</directory>
+			<filtered>true</filtered>
+			<outputDirectory>/META-INF</outputDirectory>
+			<includes>
+				<include>**/*.xml</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/cq/META-INF</directory>
+			<outputDirectory>/META-INF</outputDirectory>
+			<excludes>
+				<exclude>**/*.xml</exclude>
+			</excludes>
+		</fileSet>
+	</fileSets>
+</assembly>

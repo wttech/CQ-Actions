@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.cognifide.cq.actions</groupId>
+        <artifactId>com.cognifide.cq.actions.parent</artifactId>
+        <version>5.0.1-SNAPSHOT</version>
+    </parent>
+
+	<artifactId>com.cognifide.cq.actions.config</artifactId>
+	<packaging>pom</packaging>
+	<name>CQ Actions - Configuration</name>
+
+	<build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <!-- to be consistent with other assembly packages naming -->
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <configuration>
+                        <appendAssemblyId>false</appendAssemblyId>
+                        <finalName>${assembly.name}-config-${project.version}-${assembly.descriptor}</finalName>
+                        <descriptors>
+                            <descriptor>src/main/assembly/config.xml</descriptor>
+                        </descriptors>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.cognifide.maven.plugins</groupId>
+                    <artifactId>maven-crx-plugin</artifactId>
+                    <configuration>
+                        <packageFileName>${project.build.directory}/${assembly.name}-config-${project.version}-${assembly.descriptor}.zip</packageFileName>
+                        <packageName>${assembly.name}-config-${assembly.descriptor}</packageName>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <skipAssembly>false</skipAssembly>
+                    <runOnlyAtExecutionRoot>false</runOnlyAtExecutionRoot>
+                </configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.cognifide.maven.plugins</groupId>
+				<artifactId>maven-crx-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>

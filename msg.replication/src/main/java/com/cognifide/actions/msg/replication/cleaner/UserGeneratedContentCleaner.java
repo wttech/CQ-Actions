@@ -20,30 +20,20 @@
 
 package com.cognifide.actions.msg.replication.cleaner;
 
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.jcr.query.Query;
-
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
+import com.cognifide.actions.msg.replication.Configuration;
+import org.apache.felix.scr.annotations.*;
 import org.apache.jackrabbit.util.ISO8601;
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.*;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.apache.sling.commons.scheduler.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cognifide.actions.msg.replication.Configuration;
+import javax.jcr.query.Query;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Remove old and unnecessary action entries.
@@ -89,9 +79,11 @@ public class UserGeneratedContentCleaner implements Runnable {
 		final Calendar until = Calendar.getInstance();
 		until.add(Calendar.HOUR, -ttl);
 
+		Map<String, Object> authenticationInfo = new HashMap<>();
+		authenticationInfo.put(ResourceResolverFactory.SUBSERVICE, "com.cognifide.cq.actions.msg.replication");
 		ResourceResolver resolver = null;
 		try {
-			resolver = resolverFactory.getAdministrativeResourceResolver(null);
+			resolver = resolverFactory.getServiceResourceResolver(authenticationInfo);
 			final Resource actionRoot = resolver.getResource(config.getActionRoot());
 			if (actionRoot != null) {
 				final Resource yearNode = deleteChildrenUntil(actionRoot, until.get(Calendar.YEAR));

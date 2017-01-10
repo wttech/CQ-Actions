@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:rep="internal"
+    jcr:primaryType="rep:SystemUser"
+    jcr:uuid="5659e898-5111-3857-8fb6-47cac1dd1259"
+    rep:authorizableId="cq-actions-system-user"
+    rep:principalName="cq-actions-system-user"/>

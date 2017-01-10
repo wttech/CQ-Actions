@@ -20,24 +20,16 @@
 
 package com.cognifide.actions.core.persist;
 
-import java.util.Map;
-
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.cognifide.actions.api.ActionSendException;
 import com.cognifide.actions.core.api.MessageProducer;
 import com.cognifide.actions.core.serializer.MessageSerializer;
+import org.apache.felix.scr.annotations.*;
+import org.apache.sling.api.resource.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @Service
@@ -55,9 +47,11 @@ public class Resender implements Runnable {
 
 	@Override
 	public void run() {
+		Map<String, Object> authenticationInfo = new HashMap<>();
+		authenticationInfo.put(ResourceResolverFactory.SUBSERVICE, "com.cognifide.cq.actions.core");
 		ResourceResolver resolver = null;
 		try {
-			resolver = resolverFactory.getAdministrativeResourceResolver(null);
+			resolver = resolverFactory.getServiceResourceResolver(authenticationInfo);
 			final Resource parent = resolver.getResource(MessagePersistenceService.SERIALIZED_ACTIONS);
 			if (parent == null) {
 				return;

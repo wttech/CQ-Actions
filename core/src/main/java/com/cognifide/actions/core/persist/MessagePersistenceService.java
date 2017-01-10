@@ -20,21 +20,16 @@
 
 package com.cognifide.actions.core.persist;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.UUID;
-
+import com.cognifide.actions.core.serializer.MessageSerializer;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.api.resource.*;
 
-import com.cognifide.actions.core.serializer.MessageSerializer;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Component
 @Service(MessagePersistenceService.class)
@@ -45,13 +40,18 @@ public class MessagePersistenceService {
 	private ResourceResolverFactory resolverFactory;
 
 	public void persist(String type, Map<String, String> message) throws LoginException, PersistenceException {
-		ResourceResolver resolver = resolverFactory.getAdministrativeResourceResolver(null);
+		Map<String, Object> authenticationInfo = new HashMap<>();
+		authenticationInfo.put(ResourceResolverFactory.SUBSERVICE, "com.cognifide.cq.actions.core");
+		ResourceResolver resolver = null;
 		try {
+			resolver = resolverFactory.getServiceResourceResolver(authenticationInfo);
 			final Resource messageResource = createMessageResource(resolver);
 			MessageSerializer.saveMessageToResource(messageResource, type, message);
 			resolver.commit();
 		} finally {
-			resolver.close();
+			if (resolver != null) {
+				resolver.close();
+			}
 		}
 	}
 

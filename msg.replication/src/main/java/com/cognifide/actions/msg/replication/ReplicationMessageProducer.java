@@ -20,33 +20,21 @@
 
 package com.cognifide.actions.msg.replication;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Random;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.api.resource.ResourceUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.cognifide.actions.core.api.MessageProducer;
 import com.cognifide.actions.core.serializer.MessageSerializer;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.wcm.api.NameConstants;
+import org.apache.commons.lang.StringUtils;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
+import org.apache.sling.api.resource.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Component
 @Service
@@ -62,9 +50,11 @@ public class ReplicationMessageProducer implements MessageProducer {
 
 	@Override
 	public boolean sendMessage(String type, Map<String, String> message) {
+		Map<String, Object> authenticationInfo = new HashMap<>();
+		authenticationInfo.put(ResourceResolverFactory.SUBSERVICE, "com.cognifide.cq.actions.msg.replication");
 		ResourceResolver resolver = null;
 		try {
-			resolver = resolverFactory.getAdministrativeResourceResolver(null);
+			resolver = resolverFactory.getServiceResourceResolver(authenticationInfo);
 			final Resource actionResource = createActionResource(resolver, type, "*");
 			MessageSerializer.saveMessageToResource(actionResource, type, message);
 			resolver.commit();

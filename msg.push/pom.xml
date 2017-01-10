@@ -27,10 +27,13 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <!-- skipping the assembly in root pom (but not in children) -->
+                <inherited>false</inherited>
                 <configuration>
-                    <instructions>
-                        <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
-                    </instructions>
+                    <skipAssembly>true</skipAssembly>
                 </configuration>
             </plugin>
         </plugins>
@@ -60,7 +63,7 @@
         <dependency>
             <groupId>com.adobe.aem</groupId>
             <artifactId>uber-jar</artifactId>
-            <classifier>obfuscated-apis</classifier>
+            <classifier>apis</classifier>
         </dependency>
     </dependencies>
 </project>

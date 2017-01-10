@@ -20,13 +20,11 @@
 
 package com.cognifide.actions.msg.replication.reception;
 
-import java.util.Map;
-
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
+import com.cognifide.actions.core.api.MessageConsumer;
+import com.cognifide.actions.core.serializer.MessageSerializer;
+import com.day.cq.wcm.api.Page;
+import com.day.cq.wcm.api.PageManager;
+import org.apache.felix.scr.annotations.*;
 import org.apache.sling.api.SlingConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -36,10 +34,8 @@ import org.apache.sling.event.jobs.consumer.JobConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cognifide.actions.core.api.MessageConsumer;
-import com.cognifide.actions.core.serializer.MessageSerializer;
-import com.day.cq.wcm.api.Page;
-import com.day.cq.wcm.api.PageManager;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component(immediate = true)
 @Service
@@ -59,9 +55,11 @@ public class HandleMessageJob implements JobConsumer {
 	@Override
 	public JobResult process(Job job) {
 		final String path = (String) job.getProperty(SlingConstants.PROPERTY_PATH);
+		Map<String, Object> authenticationInfo = new HashMap<>();
+		authenticationInfo.put(ResourceResolverFactory.SUBSERVICE, "com.cognifide.cq.actions.msg.replication");
 		ResourceResolver resolver = null;
 		try {
-			resolver = resolverFactory.getAdministrativeResourceResolver(null);
+			resolver = resolverFactory.getServiceResourceResolver(authenticationInfo);
 			final PageManager pm = resolver.adaptTo(PageManager.class);
 			final Page page = pm.getPage(path);
 			final String actionType;
