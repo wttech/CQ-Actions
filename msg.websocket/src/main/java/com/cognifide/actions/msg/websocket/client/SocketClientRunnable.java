@@ -31,6 +31,7 @@ import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 
+import org.apache.commons.lang.StringUtils;
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.client.ClientProperties;
 import org.glassfish.tyrus.client.auth.Credentials;
@@ -59,7 +60,9 @@ public class SocketClientRunnable extends Endpoint implements Runnable {
 		this.receivers = receivers;
 		this.serverUrl = serverUrl.replace("http://", "ws://") + MessageWebsocketServlet.PATH;
 		client = ClientManager.createClient();
-		client.getProperties().put(ClientProperties.CREDENTIALS, new Credentials("admin", "admin"));
+		String clientUsername = StringUtils.defaultIfEmpty(username, "admin");
+		String clientPassword = StringUtils.defaultIfEmpty(password, "admin");
+		client.getProperties().put(ClientProperties.CREDENTIALS, new Credentials(clientUsername, clientPassword));
 	}
 
 	@Override
