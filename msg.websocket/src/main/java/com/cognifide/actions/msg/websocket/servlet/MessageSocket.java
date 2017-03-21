@@ -68,18 +68,29 @@ public class MessageSocket {
 	@OnWebSocketClose
 	public void onWebSocketClose(int i, String s) {
 		LOG.info("Socket closed");
-		listener.socketClosed(this);
+		closeConnection();
 	}
 
 	@OnWebSocketConnect
 	public void onWebSocketConnect(Session session) {
 		LOG.info("Socket opened");
 		this.session = session;
+		// Set no timeout for communication - wait forever
+		this.session.setIdleTimeout(0);
 	}
 
 	@OnWebSocketError
 	public void onWebSocketError(Throwable e) {
 		LOG.debug("Socket Error occured", e);
+		closeConnection();
+	}
+
+	private void closeConnection() {
+		LOG.debug("Closing socket and session...");
+		if (session != null) {
+			session.close();
+		}
+		listener.socketClosed(this);
 	}
 
 	@OnWebSocketMessage
