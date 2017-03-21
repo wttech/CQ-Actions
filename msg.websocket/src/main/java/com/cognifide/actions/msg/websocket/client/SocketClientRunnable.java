@@ -20,11 +20,13 @@
 
 package com.cognifide.actions.msg.websocket.client;
 
+import com.cognifide.actions.msg.websocket.api.SocketReceiver;
+import com.cognifide.actions.msg.websocket.servlet.MessageWebsocketServlet;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Set;
-
 import javax.websocket.DeploymentException;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
@@ -37,9 +39,6 @@ import org.glassfish.tyrus.client.ClientProperties;
 import org.glassfish.tyrus.client.auth.Credentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.cognifide.actions.msg.websocket.api.SocketReceiver;
-import com.cognifide.actions.msg.websocket.servlet.MessageWebsocketServlet;
 
 public class SocketClientRunnable extends Endpoint implements Runnable {
 
@@ -56,48 +55,19 @@ public class SocketClientRunnable extends Endpoint implements Runnable {
 	private volatile boolean shouldStop = false;
 
 	public SocketClientRunnable(Set<SocketReceiver> receivers, String serverUrl, String username,
-			String password) throws URISyntaxException {
+								String password) throws URISyntaxException {
 		this.receivers = receivers;
 		this.serverUrl = serverUrl.replace("http://", "ws://") + MessageWebsocketServlet.PATH;
 		client = ClientManager.createClient();
 		String clientUsername = StringUtils.defaultIfEmpty(username, "admin");
 		String clientPassword = StringUtils.defaultIfEmpty(password, "admin");
-		client.getProperties().put(ClientProperties.CREDENTIALS, new Credentials(clientUsername, clientPassword));
-	}
-
-	@Override
-	public void run() {
-		while (!shouldStop) {
-			try {
-				if (session == null || !session.isOpen()) {
-					client.connectToServer(this, new URI(serverUrl));
-				}
-			} catch (IOException | DeploymentException | URISyntaxException e) {
-				LOG.debug("Can't connect to the server " + serverUrl, e);
-			}
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e1) {
-				LOG.error("Interrupted", e1);
-				return;
-			}
-		}
-	}
-
-	public void stop() {
-		shouldStop = true;
-		if (session != null) {
-			try {
-				session.close();
-			} catch (IOException e) {
-				LOG.error("Can't close session", e);
-			}
-		}
+		client.getProperties()
+				.put(ClientProperties.CREDENTIALS, new Credentials(clientUsername, clientPassword));
 	}
 
 	@Override
 	public void onOpen(final Session session, EndpointConfig endpointConfig) {
-		LOG.info("Session opened");
+		LOG.info("Session {} opened", session.getId());
 		this.session = session;
 		session.addMessageHandler(new MessageHandler.Whole<String>() {
 			@Override
@@ -111,6 +81,56 @@ public class SocketClientRunnable extends Endpoint implements Runnable {
 				}
 			}
 		});
+	}
+
+	@Override
+	public void run() {
+		reconnect();
+		while (!shouldStop) {
+			if (connectionBroken()) {
+				String sessionId = session != null ? session.getId() : null;
+				LOG.debug("Connection was lost... session: {} no longer active", sessionId);
+				reconnect();
+			}
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e1) {
+				LOG.error("Interrupted", e1);
+				return;
+			}
+		}
+	}
+
+	public void stop() {
+		shouldStop = true;
+		closeSession();
+	}
+
+	private boolean connectionBroken() {
+		return session == null || !session.isOpen();
+	}
+
+	private void reconnect() {
+		closeSession();
+		try {
+			LOG.debug("Connecting to server: `{}` (receivers no: {})", serverUrl, receivers.size());
+			final Session currentSession = client.connectToServer(this, new URI(serverUrl));
+			LOG.debug("New session created: ", currentSession.getId());
+		} catch (IOException | DeploymentException | URISyntaxException e) {
+			LOG.error("Can't connect to the server {}", serverUrl, e);
+		}
+	}
+
+	private void closeSession() {
+		String sessionId = session != null ? session.getId() : null;
+		LOG.info("Closing session: {}", sessionId);
+		if (session != null) {
+			try {
+				session.close();
+			} catch (IOException e) {
+				LOG.error("Can't close session", e);
+			}
+		}
 	}
 
 	protected void gotMessage(String message) {

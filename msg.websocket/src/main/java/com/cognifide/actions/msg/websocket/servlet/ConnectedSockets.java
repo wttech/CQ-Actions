@@ -27,14 +27,18 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Service;
 
 import com.cognifide.actions.msg.websocket.api.SocketSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 @Service({ ConnectedSockets.class, SocketSender.class })
 public class ConnectedSockets implements SocketClosedListener, SocketSender {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConnectedSockets.class);
 	private final List<MessageSocket> sockets = new CopyOnWriteArrayList<MessageSocket>();
 
 	public MessageSocket createSocket() {
+		LOGGER.debug("Creating new socket");
 		final MessageSocket newSocket = new MessageSocket(this);
 		sockets.add(newSocket);
 		return newSocket;
@@ -43,9 +47,11 @@ public class ConnectedSockets implements SocketClosedListener, SocketSender {
 	@Override
 	public void socketClosed(MessageSocket messageSocket) {
 		sockets.remove(messageSocket);
+		LOGGER.debug("Socket closed (left {} sockets)", sockets.size());
 	}
 
 	public boolean sendMessage(String message) {
+		LOGGER.debug("Got message `{}` - sending", message);
 		boolean success = false;
 		for (MessageSocket socket : sockets) {
 			success = socket.sendMessage(message) || success;
