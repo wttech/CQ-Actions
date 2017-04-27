@@ -1,14 +1,14 @@
 ![Cognifide logo](http://cognifide.github.io/images/cognifide-logo.png)
 
-# CQ Actions
+# AEM Actions
 
 ## Purpose
 
-CQ Actions is a mechanism serving as the underlying transport layer, which ensures that data is properly and safely transported from publish instances to author instance and is processed on the latter.
+AEM Actions is a mechanism serving as the underlying transport layer, which ensures that data is properly and safely transported from publish instances to author instance and is processed on the latter.
 
 ## Features
 
-* Seamless communication from CQ publish to author
+* Seamless communication from AEM publish to author
 * Messages contain key-value map, where key is a `String` and value is a `String`, `Calendar` or a primitive (`int`, `float`, etc.)
 * You may register any number of author services listening to a given message topic
 
@@ -19,6 +19,9 @@ CQ Actions version below 4.0.0:
 
 CQ Actions version 4.0.0:
 * AEM 6.2
+
+AEM Actions version 6.0.0:
+* AEM 6.3
 
 ## Installation
 
@@ -77,7 +80,7 @@ Once, the `sendAction()` is invoked, the action will be send to the author insta
 
 ## Transport types
 
-CQ Actions supports a few types of the transport layer to get the message delivered from publish to author.
+AEM Actions supports a few types of the transport layer to get the message delivered from publish to author.
 
 ### Reverse-replication
 
