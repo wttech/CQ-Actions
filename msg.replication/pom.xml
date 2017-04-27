@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.cognifide.cq.actions</groupId>
         <artifactId>com.cognifide.cq.actions.parent</artifactId>
-        <version>5.0.3-SNAPSHOT</version>
+        <version>6.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -29,6 +29,7 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
+                        <Bundle-Name>AEM Actions Replication Message</Bundle-Name>
                         <Import-Package>
                             org.apache.sling.event.jobs.consumer;version="[1.2,2)",
                             *
