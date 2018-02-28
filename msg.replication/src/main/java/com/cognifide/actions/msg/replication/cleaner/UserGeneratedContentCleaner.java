@@ -108,7 +108,7 @@ public class UserGeneratedContentCleaner implements Runnable {
 				if (dayNode == null && ttl < 24) {
 					return;
 				}
-				removeNodesFromDayFolder(dayNode, until);
+				removeNodesFromDayFolder(actionRoot, until);
 			}
 		} catch (PersistenceException e) {
 			LOG.error("Can't clean UGC", e);
