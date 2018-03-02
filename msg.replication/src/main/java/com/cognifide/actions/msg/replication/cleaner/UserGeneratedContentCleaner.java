@@ -105,10 +105,9 @@ public class UserGeneratedContentCleaner implements Runnable {
 				}
 
 				final Resource dayNode = deleteChildrenUntil(monthNode, until.get(Calendar.DAY_OF_MONTH));
-				if (dayNode == null && ttl < 24) {
-					return;
+				if (dayNode != null) {
+					removeNodesFromDayFolder(dayNode, until);
 				}
-				removeNodesFromDayFolder(dayNode, until);
 			}
 		} catch (PersistenceException e) {
 			LOG.error("Can't clean UGC", e);
