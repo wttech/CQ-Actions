@@ -54,7 +54,7 @@
         <dependency>
             <groupId>com.adobe.aem</groupId>
             <artifactId>uber-jar</artifactId>
-            <classifier>obfuscated-apis</classifier>
+            <classifier>apis</classifier>
         </dependency>
     </dependencies>
 </project>
