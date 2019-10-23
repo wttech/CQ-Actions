@@ -31,7 +31,7 @@
         <instance.username>admin</instance.username>
         <instance.password>admin</instance.password>
 
-        <jetty.version>9.2.14.v20151106</jetty.version>
+        <jetty.version>9.4.21.v20190926</jetty.version>
     </properties>
 
     <organization>
