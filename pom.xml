@@ -15,7 +15,7 @@
 
     <name>CQ Actions Parent</name>
     <description>CQ Actions package</description>
-    <url>https://github.com/Cognifide/CQ-Actions</url>
+    <url>https://github.com/wttech/CQ-Actions</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -35,7 +35,7 @@
     </properties>
 
     <organization>
-        <name>Cognifide</name>
+        <name>Wunderman Thompson Technology</name>
         <url>http://www.cognifide.com</url>
     </organization>
 
@@ -43,14 +43,14 @@
         <developer>
             <name>Tomasz Rękawek</name>
             <email>tomasz.rekawek@cognifide.com</email>
-            <organization>Cognifide</organization>
+            <organization>Wunderman Thompson Technology</organization>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:https://github.com/Cognifide/CQ-Actions/</connection>
-        <developerConnection>scm:git:https://github.com/Cognifide/CQ-Actions/</developerConnection>
-        <url>https://github.com/Cognifide/CQ-Actions</url>
+        <connection>scm:git:https://github.com/wttech/CQ-Actions/</connection>
+        <developerConnection>scm:git:https://github.com/wttech/CQ-Actions/</developerConnection>
+        <url>https://github.com/wttech/CQ-Actions</url>
       <tag>HEAD</tag>
   </scm>
 
