@@ -1,5 +1,3 @@
-![Cognifide logo](https://assets.cognifide.com/github/cognifide-logo.png)
-
 # AEM Actions
 
 ## Purpose
